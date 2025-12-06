@@ -27,10 +27,10 @@ const Navbar = ({ toggleSidebar, showMenuButton, currentProduct }) => {
 
   const getPageTitle = () => {
     if (currentProduct === 'home') return 'Welcome to OptiNyxus';
-    if (currentProduct === 'pricegenix') return 'Price Optimization Engine';
-    if (currentProduct === 'marketedge') return 'Market Intelligence';
-    if (currentProduct === 'optiflow') return 'Workflow Automation';
-    if (currentProduct === 'engagesync') return 'Customer Engagement';
+    if (currentProduct === 'pricegenix') return 'PriceGenix';
+    if (currentProduct === 'marketedge') return 'MarketEdge';
+    if (currentProduct === 'optiflow') return 'OptiFlow';
+    if (currentProduct === 'engagesync') return 'EngageSync';
     return 'Dashboard';
   };
 

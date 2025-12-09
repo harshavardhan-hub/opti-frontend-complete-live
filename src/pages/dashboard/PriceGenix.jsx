@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import PriceGenixSidebar from '../../components/sidebars/PriceGenixSidebar';
-import { TrendingUp, DollarSign, Percent, Package, Award, Target, BarChart3, Download, X, TrendingDown, Maximize2, ChevronRight, ArrowUpRight, Clock, ChevronLeft, Eye, AlertCircle, Zap, TrendingDown as TrendingDownIcon, ArrowDown, History } from 'lucide-react';
+import { TrendingUp, DollarSign, Percent, Package, Award, Target, BarChart3, Download, X, TrendingDown, Maximize2, ChevronRight, ArrowUpRight, Clock, ChevronLeft, Eye, AlertCircle, Zap, TrendingDown as TrendingDownIcon, ArrowDown, History, Play, Sliders } from 'lucide-react';
 
 // Mock Data
 const mockOptimizationResults = [
@@ -12,7 +13,6 @@ const mockOptimizationResults = [
   { article: '#1238', status: 'In-Progress', stock: 48, mop: 98, nlc: 72, maxPrice: 118, minPrice: 78, recoPrice: 92, discount: 6, discountPercent: 6.1, units: 68, dr: 1.15 },
 ];
 
-// Extended Mock Data for Top 50% Articles
 const generateTop50MockData = (metric) => {
   const baseData = [
     { id: '#A1234', name: 'Premium Laptop Pro', sales: 4185125, profit: 1255538, units: 13325, discount: 18500, avgPrice: 313836, maxPrice: 368609, minPrice: 245000 },
@@ -30,7 +30,6 @@ const generateTop50MockData = (metric) => {
   return baseData.sort((a, b) => b[metric] - a[metric]);
 };
 
-// Extended Mock Data for Top 80% Articles
 const generateTop80MockData = (metric) => {
   const baseData = [
     { id: '#B5001', name: 'Premium Laptop Pro Max', sales: 6478502, profit: 1943551, units: 20595, discount: 25914, avgPrice: 314500, maxPrice: 371289, minPrice: 268000 },
@@ -50,7 +49,6 @@ const generateTop80MockData = (metric) => {
   return baseData.sort((a, b) => b[metric] - a[metric]);
 };
 
-// Mock data for Top Articles Summary
 const mockTopArticlesSummary = {
   top50: {
     sales: 41851258,
@@ -70,7 +68,73 @@ const mockTopArticlesSummary = {
   }
 };
 
-// 🔥 SIMPLE MOCK DATA - Ready for PostgreSQL
+const mockPerformanceData = {
+  base: {
+    sales: 71923147,
+    profit: 5619493,
+    discount: 6035879,
+    units: 2823,
+    profitability: 7.81
+  },
+  test: {
+    sales: 76342235,
+    profit: 5965561,
+    discount: 6827464,
+    units: 2880,
+    profitability: 7.81
+  },
+  growth: {
+    sales: 4419088,
+    profit: 346068,
+    discount: 791584,
+    units: 57,
+    profitability: 0.00
+  },
+  growthPercent: {
+    sales: 6.14,
+    profit: 6.16,
+    units: 2.02
+  }
+};
+
+const mockPromotionData = {
+  contribution: {
+    top50: {
+      gmv: 41851258,
+      avgPrice: 3138364,
+      maxPrice: 3686090,
+      gmvPerRs: 11.35,
+      gpPerRs: 0.85,
+      count: 1552
+    },
+    top80: {
+      gmv: 64785025,
+      avgPrice: 5559416,
+      maxPrice: 5712895,
+      gmvPerRs: 11.34,
+      gpPerRs: 0.97,
+      count: 2480
+    }
+  },
+  avgListPrice: 27955,
+  avgSalePrice: 26508,
+  incrementalROI: {
+    gmvPerRs: 5.58,
+    gpPerRs: 0.44,
+    unitsPerRs: 0.00
+  },
+  percentUnderPromotion: {
+    sales: 5.79,
+    profit: 5.80,
+    units: 1.98
+  },
+  effectiveness: {
+    base: { gmvPerRs: 11.92, gpPerRs: 0.93 },
+    test: { gmvPerRs: 11.18, gpPerRs: 0.87 },
+    incremental: { gmvPerRs: 5.58, gpPerRs: 0.44 }
+  }
+};
+
 const mockPastIterations = [
   {
     id: 1,
@@ -91,6 +155,7 @@ const mockPastIterations = [
 ];
 
 const PriceGenix = () => {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState('pricing_data_sample.csv');
   const [selectedOptimization, setSelectedOptimization] = useState('sales');
@@ -107,20 +172,8 @@ const PriceGenix = () => {
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
   
-  // ALL DYNAMIC STATE
-  const [currentBaseCondition, setCurrentBaseCondition] = useState({ sales: 1250000, profit: 325000, profitability: 26.0, units: 8500 });
-  const [currentOptimizedCondition, setCurrentOptimizedCondition] = useState({ sales: 1425000, profit: 398750, profitability: 28.0, units: 9200 });
-  const [currentPromotionData, setCurrentPromotionData] = useState({
-    avgListPrice: 27955,
-    avgSalePrice: 26508,
-    incrementalROI: { salesPerRs: 5.58, gpPerRs: 0.44, unitsPerRs: 0.00 },
-    percentUnderPromotion: { sales: 5.79, profit: 5.80, units: 1.98 },
-    effectiveness: {
-      base: { salesPerRs: 11.92, gpPerRs: 0.93 },
-      test: { salesPerRs: 11.18, gpPerRs: 0.87 },
-      incremental: { salesPerRs: 5.58, gpPerRs: 0.44 }
-    }
-  });
+  const [currentPerformanceData, setCurrentPerformanceData] = useState(mockPerformanceData);
+  const [currentPromotionData, setCurrentPromotionData] = useState(mockPromotionData);
   const [currentTopArticlesSummary, setCurrentTopArticlesSummary] = useState(mockTopArticlesSummary);
 
   const scoringOptions = ['Article', 'Brand', 'Category', 'Store', 'Geography'];
@@ -144,7 +197,6 @@ const PriceGenix = () => {
     setSelectedHistoryItem(null);
   };
 
-  // 🔥 UPDATED: Close sidebar AND dropdown when viewing history
   const handleViewHistory = (iteration) => {
     setSidebarOpen(false);
     setIsHistoryDropdownOpen(false);
@@ -210,17 +262,6 @@ const PriceGenix = () => {
     }));
   };
 
-  // CALCULATED VALUES
-  const growth = {
-    sales: ((currentOptimizedCondition.sales - currentBaseCondition.sales) / currentBaseCondition.sales * 100).toFixed(1),
-    profit: ((currentOptimizedCondition.profit - currentBaseCondition.profit) / currentBaseCondition.profit * 100).toFixed(1),
-    profitability: (currentOptimizedCondition.profitability - currentBaseCondition.profitability).toFixed(1),
-    units: ((currentOptimizedCondition.units - currentBaseCondition.units) / currentBaseCondition.units * 100).toFixed(1)
-  };
-
-  const priceDifference = currentPromotionData.avgListPrice - currentPromotionData.avgSalePrice;
-  const discountPercent = ((priceDifference / currentPromotionData.avgListPrice) * 100).toFixed(1);
-
   const getFormattedValue = (value, metric) => {
     if (metric === 'sales' || metric === 'profit' || metric === 'discount') {
       return `₹${(value / 100000).toFixed(2)}L`;
@@ -245,60 +286,60 @@ const PriceGenix = () => {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
           <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50">
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">Article {selectedArticle.article}</h3>
-                <p className="text-sm text-gray-500 mt-1">Price vs Sales Trend Analysis</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Article {selectedArticle.article}</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">Price vs Sales Trend Analysis</p>
               </div>
-              <button onClick={() => setShowPopup(false)} className="w-10 h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors">
-                <X className="w-5 h-5 text-gray-600" />
+              <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
                   <p className="text-xs text-gray-500 mb-1">Current Price</p>
-                  <p className="text-lg font-semibold text-gray-900">₹{selectedArticle.mop}</p>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">₹{selectedArticle.mop}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
                   <p className="text-xs text-gray-500 mb-1">Recommended Price</p>
-                  <p className="text-lg font-semibold text-emerald-700">₹{selectedArticle.recoPrice}</p>
+                  <p className="text-base sm:text-lg font-semibold text-emerald-700">₹{selectedArticle.recoPrice}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
                   <p className="text-xs text-gray-500 mb-1">Current Units</p>
-                  <p className="text-lg font-semibold text-gray-900">{selectedArticle.units}</p>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">{selectedArticle.units}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
                   <p className="text-xs text-gray-500 mb-1">Discount</p>
-                  <p className="text-lg font-semibold text-gray-900">{selectedArticle.discountPercent}%</p>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">{selectedArticle.discountPercent}%</p>
                 </div>
               </div>
 
               <div>
-                <h4 className="text-base font-semibold text-gray-900 mb-3">Historical Trend (Last 6 Months)</h4>
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <table className="w-full text-sm">
+                <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3">Historical Trend (Last 6 Months)</h4>
+                <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                  <table className="w-full text-xs sm:text-sm min-w-[500px]">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500">Month</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Price (₹)</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Sales (Units)</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Trend</th>
+                        <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs font-medium text-gray-500">Month</th>
+                        <th className="text-right py-2 sm:py-3 px-3 sm:px-4 text-xs font-medium text-gray-500">Price (₹)</th>
+                        <th className="text-right py-2 sm:py-3 px-3 sm:px-4 text-xs font-medium text-gray-500">Sales (Units)</th>
+                        <th className="text-right py-2 sm:py-3 px-3 sm:px-4 text-xs font-medium text-gray-500">Trend</th>
                       </tr>
                     </thead>
                     <tbody>
                       {generateTimeSeriesData(selectedArticle).map((data, idx) => (
                         <tr key={idx} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-4 font-medium text-gray-900">{data.month}</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{data.price.toFixed(2)}</td>
-                          <td className="py-3 px-4 text-right text-gray-600">{Math.round(data.sales)}</td>
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900">{data.month}</td>
+                          <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-600">₹{data.price.toFixed(2)}</td>
+                          <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-600">{Math.round(data.sales)}</td>
+                          <td className="py-2 sm:py-3 px-3 sm:px-4 text-right">
                             {idx > 0 && (
                               data.sales > generateTimeSeriesData(selectedArticle)[idx-1].sales ? (
-                                <TrendingUp className="w-4 h-4 text-emerald-600 inline" />
+                                <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 inline" />
                               ) : (
-                                <TrendingDown className="w-4 h-4 text-red-500 inline" />
+                                <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 inline" />
                               )
                             )}
                           </td>
@@ -310,8 +351,8 @@ const PriceGenix = () => {
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
-              <button onClick={() => setShowPopup(false)} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+            <div className="p-4 sm:p-6 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
+              <button onClick={() => setShowPopup(false)} className="px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
                 Close
               </button>
             </div>
@@ -323,138 +364,72 @@ const PriceGenix = () => {
     if (popupType === 'comparison') {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-200 bg-gray-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Performance Comparison</h3>
-                  <p className="text-sm text-gray-500 mt-1">Base vs Optimized Analysis</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Performance Analysis</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">Base vs Test comparison</p>
                 </div>
-                <button onClick={() => setShowPopup(false)} className="w-10 h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors">
-                  <X className="w-5 h-5 text-gray-600" />
+                <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </button>
               </div>
             </div>
 
-            <div className="p-6 bg-white">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Sales Card */}
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <DollarSign className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Sales</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Base</span>
-                      <span className="text-base font-bold text-gray-900">₹{(currentBaseCondition.sales / 1000).toFixed(0)}K</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Optimized</span>
-                      <span className="text-base font-bold text-emerald-700">₹{(currentOptimizedCondition.sales / 1000).toFixed(0)}K</span>
-                    </div>
-                    <div className="pt-2 border-t-2 border-gray-300">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-700">Growth</span>
-                        <div className="flex items-center gap-1">
-                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-lg font-bold text-emerald-700">+{growth.sales}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profit Card */}
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <TrendingUp className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Profit</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Base</span>
-                      <span className="text-base font-bold text-gray-900">₹{(currentBaseCondition.profit / 1000).toFixed(0)}K</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Optimized</span>
-                      <span className="text-base font-bold text-emerald-700">₹{(currentOptimizedCondition.profit / 1000).toFixed(0)}K</span>
-                    </div>
-                    <div className="pt-2 border-t-2 border-gray-300">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-700">Growth</span>
-                        <div className="flex items-center gap-1">
-                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-lg font-bold text-emerald-700">+{growth.profit}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profitability Card */}
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <Percent className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Profitability</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Base</span>
-                      <span className="text-base font-bold text-gray-900">{currentBaseCondition.profitability}%</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Optimized</span>
-                      <span className="text-base font-bold text-emerald-700">{currentOptimizedCondition.profitability}%</span>
-                    </div>
-                    <div className="pt-2 border-t-2 border-gray-300">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-700">Improvement</span>
-                        <span className="text-lg font-bold text-emerald-700">+{growth.profitability}%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Units Card */}
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <Package className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Units Sold</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Base</span>
-                      <span className="text-base font-bold text-gray-900">{currentBaseCondition.units.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Optimized</span>
-                      <span className="text-base font-bold text-emerald-700">{currentOptimizedCondition.units.toLocaleString()}</span>
-                    </div>
-                    <div className="pt-2 border-t-2 border-gray-300">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-700">Growth</span>
-                        <div className="flex items-center gap-1">
-                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-lg font-bold text-emerald-700">+{growth.units}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div className="p-4 sm:p-6 bg-white flex-1 overflow-auto">
+              <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                <table className="w-full text-xs sm:text-sm min-w-[600px]">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300"></th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Sales</th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Profit</th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Discount</th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Units</th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Profitability</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white">
+                    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Base</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.sales.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.profit.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.discount.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.base.units.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.base.profitability}%</td>
+                    </tr>
+                    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.sales.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.profit.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.discount.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.test.units.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.test.profitability}%</td>
+                    </tr>
+                    <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Growth</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPerformanceData.growth.sales.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPerformanceData.growth.profit.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPerformanceData.growth.discount.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">{currentPerformanceData.growth.units.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">{currentPerformanceData.growth.profitability.toFixed(2)}%</td>
+                    </tr>
+                    <tr className="bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Growth %</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-blue-700">{currentPerformanceData.growthPercent.sales}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-blue-700">{currentPerformanceData.growthPercent.profit}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400">-</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-blue-700">{currentPerformanceData.growthPercent.units}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400">-</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-end">
-              <button onClick={() => setShowPopup(false)} className="px-5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0">
+              <button onClick={() => setShowPopup(false)} className="px-4 sm:px-5 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors">
                 Close
               </button>
             </div>
@@ -463,6 +438,7 @@ const PriceGenix = () => {
       );
     }
 
+    // 🔥 TOP ARTICLES POPUP - SINGLE COLOR RADIO BUTTONS, NO ICONS, RESPONSIVE
     if (popupType === 'topArticles') {
       const currentTop50Data = generateTop50MockData(topArticlesMetric);
       const currentTop80Data = generateTop80MockData(topArticlesMetric);
@@ -470,73 +446,94 @@ const PriceGenix = () => {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
           <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Top Selling Articles Analysis</h3>
-                  <p className="text-sm text-gray-500 mt-1">Complete breakdown by contribution</p>
+            {/* HEADER */}
+            <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Top Selling Articles Analysis</h3>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Complete breakdown by contribution</p>
+                  </div>
+                  <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0 ml-2">
+                    <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  </button>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setTopArticlesMetric('sales')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border ${
-                        topArticlesMetric === 'sales'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-600 border-gray-300 hover:border-gray-900'
-                      }`}
-                    >
-                      <DollarSign className="w-3.5 h-3.5" />
-                      Sales
-                    </button>
-                    <button
-                      onClick={() => setTopArticlesMetric('profit')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border ${
-                        topArticlesMetric === 'profit'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-600 border-gray-300 hover:border-gray-900'
-                      }`}
-                    >
-                      <TrendingUp className="w-3.5 h-3.5" />
-                      Profit
-                    </button>
-                    <button
-                      onClick={() => setTopArticlesMetric('units')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border ${
-                        topArticlesMetric === 'units'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-600 border-gray-300 hover:border-gray-900'
-                      }`}
-                    >
-                      <Package className="w-3.5 h-3.5" />
-                      Units
-                    </button>
-                    <button
-                      onClick={() => setTopArticlesMetric('discount')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border ${
-                        topArticlesMetric === 'discount'
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-600 border-gray-300 hover:border-gray-900'
-                      }`}
-                    >
-                      <Percent className="w-3.5 h-3.5" />
-                      Discount
-                    </button>
-                  </div>
-                  
-                  <button onClick={() => setShowPopup(false)} className="w-10 h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center ml-2 transition-colors">
-                    <X className="w-5 h-5 text-gray-600" />
-                  </button>
+                {/* 🔥 SINGLE COLOR RADIO BUTTONS - RESPONSIVE */}
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
+                    topArticlesMetric === 'sales'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="topArticlesMetric"
+                      value="sales"
+                      checked={topArticlesMetric === 'sales'}
+                      onChange={(e) => setTopArticlesMetric(e.target.value)}
+                      className="sr-only"
+                    />
+                    Sales
+                  </label>
+
+                  <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
+                    topArticlesMetric === 'profit'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="topArticlesMetric"
+                      value="profit"
+                      checked={topArticlesMetric === 'profit'}
+                      onChange={(e) => setTopArticlesMetric(e.target.value)}
+                      className="sr-only"
+                    />
+                    Profit
+                  </label>
+
+                  <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
+                    topArticlesMetric === 'units'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="topArticlesMetric"
+                      value="units"
+                      checked={topArticlesMetric === 'units'}
+                      onChange={(e) => setTopArticlesMetric(e.target.value)}
+                      className="sr-only"
+                    />
+                    Units
+                  </label>
+
+                  <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
+                    topArticlesMetric === 'discount'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="topArticlesMetric"
+                      value="discount"
+                      checked={topArticlesMetric === 'discount'}
+                      onChange={(e) => setTopArticlesMetric(e.target.value)}
+                      className="sr-only"
+                    />
+                    Discount
+                  </label>
                 </div>
               </div>
             </div>
 
-            <div className="px-6 pt-4 border-b border-gray-200 bg-white flex-shrink-0">
-              <div className="flex gap-2">
+            {/* TABS */}
+            <div className="px-4 sm:px-6 pt-3 sm:pt-4 border-b border-gray-200 bg-white flex-shrink-0">
+              <div className="flex gap-1 sm:gap-2 overflow-x-auto">
                 <button
                   onClick={() => setTopArticlesTab('overview')}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all border-b-2 ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-t-lg transition-all border-b-2 whitespace-nowrap ${
                     topArticlesTab === 'overview'
                       ? 'border-gray-900 text-gray-900'
                       : 'border-transparent text-gray-500 hover:text-gray-900'
@@ -546,127 +543,135 @@ const PriceGenix = () => {
                 </button>
                 <button
                   onClick={() => setTopArticlesTab('top50')}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all border-b-2 ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-t-lg transition-all border-b-2 whitespace-nowrap ${
                     topArticlesTab === 'top50'
                       ? 'border-gray-900 text-gray-900'
                       : 'border-transparent text-gray-500 hover:text-gray-900'
                   }`}
                 >
-                  Top 50% Articles
+                  Top 50%
                 </button>
                 <button
                   onClick={() => setTopArticlesTab('top80')}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all border-b-2 ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-t-lg transition-all border-b-2 whitespace-nowrap ${
                     topArticlesTab === 'top80'
                       ? 'border-gray-900 text-gray-900'
                       : 'border-transparent text-gray-500 hover:text-gray-900'
                   }`}
                 >
-                  Top 80% Articles
+                  Top 80%
                 </button>
               </div>
             </div>
 
-            <div className="p-6 bg-white flex-1 overflow-hidden">
+            {/* CONTENT - SCROLLABLE TABLES */}
+            <div className="flex-1 overflow-hidden bg-white">
               {topArticlesTab === 'overview' && (
-                <div className="h-full overflow-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                    <thead className="sticky top-0 z-10">
-                      <tr className="bg-gray-50">
-                        <th className="text-left py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">Contribution</th>
-                        <th className="text-right py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">Sales</th>
-                        <th className="text-right py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">Avg Price</th>
-                        <th className="text-right py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">Max Price</th>
-                        <th className="text-right py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">Min Price</th>
-                        <th className="text-right py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">Discount</th>
-                        <th className="text-right py-3 px-4 font-medium text-gray-900 border-b-2 border-gray-300">No. of Articles</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white">
-                      <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                        <td className="py-3 px-4 font-medium text-gray-900">Top 50% {getMetricLabel(topArticlesMetric)}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top50.sales.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top50.avgPrice.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top50.maxPrice.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top50.minPrice.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top50.discount.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top50.count.toLocaleString()}</td>
-                      </tr>
-                      <tr className="hover:bg-gray-50 transition-colors">
-                        <td className="py-3 px-4 font-medium text-gray-900">Top 80% {getMetricLabel(topArticlesMetric)}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top80.sales.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top80.avgPrice.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top80.maxPrice.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top80.minPrice.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">₹ {currentTopArticlesSummary.top80.discount.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top80.count.toLocaleString()}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div className="h-full overflow-auto p-4 sm:p-6">
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="w-full text-xs sm:text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Contribution</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Sales</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Max Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Min Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Articles</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Top 50%</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.sales.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.avgPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.maxPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.minPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.discount.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top50.count.toLocaleString()}</td>
+                        </tr>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Top 80%</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.sales.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.avgPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.maxPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.minPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.discount.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top80.count.toLocaleString()}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 
               {topArticlesTab === 'top50' && (
-                <div className="h-full overflow-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg">
-                    <thead className="sticky top-0 z-10 bg-gray-50">
-                      <tr>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Article ID</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Product Name</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">{getMetricLabel(topArticlesMetric)}</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Avg Price</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Max Price</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Min Price</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white">
-                      {currentTop50Data.map((article, index) => (
-                        <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-4 font-medium text-gray-900">{article.id}</td>
-                          <td className="py-3 px-4 text-gray-900">{article.name}</td>
-                          <td className="py-3 px-4 text-right font-semibold text-gray-900">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{(article.minPrice / 1000).toFixed(0)}K</td>
+                <div className="h-full overflow-auto p-4 sm:p-6">
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="w-full text-xs sm:text-sm">
+                      <thead className="sticky top-0 z-10 bg-gray-50">
+                        <tr>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Article ID</th>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Product Name</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">{getMetricLabel(topArticlesMetric)}</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Max Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Min Price</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-white">
+                        {currentTop50Data.map((article, index) => (
+                          <tr key={index} className="border-b border-gray-100 hover:bg-indigo-50 transition-colors">
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">{article.id}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-gray-900">{article.name}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-indigo-700">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.minPrice / 1000).toFixed(0)}K</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 
               {topArticlesTab === 'top80' && (
-                <div className="h-full overflow-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg">
-                    <thead className="sticky top-0 z-10 bg-gray-50">
-                      <tr>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Article ID</th>
-                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Product Name</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">{getMetricLabel(topArticlesMetric)}</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Avg Price</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Max Price</th>
-                        <th className="text-right py-3 px-4 text-xs font-medium text-gray-500 border-b-2 border-gray-300">Min Price</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white">
-                      {currentTop80Data.map((article, index) => (
-                        <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-4 font-medium text-gray-900">{article.id}</td>
-                          <td className="py-3 px-4 text-gray-900">{article.name}</td>
-                          <td className="py-3 px-4 text-right font-semibold text-gray-900">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
-                          <td className="py-3 px-4 text-right text-gray-600">₹{(article.minPrice / 1000).toFixed(0)}K</td>
+                <div className="h-full overflow-auto p-4 sm:p-6">
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="w-full text-xs sm:text-sm">
+                      <thead className="sticky top-0 z-10 bg-gray-50">
+                        <tr>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Article ID</th>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Product Name</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">{getMetricLabel(topArticlesMetric)}</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Max Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Min Price</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-white">
+                        {currentTop80Data.map((article, index) => (
+                          <tr key={index} className="border-b border-gray-100 hover:bg-indigo-50 transition-colors">
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">{article.id}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-gray-900">{article.name}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-indigo-700">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.minPrice / 1000).toFixed(0)}K</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0">
-              <button onClick={() => setShowPopup(false)} className="px-5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+            {/* FOOTER */}
+            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0">
+              <button onClick={() => setShowPopup(false)} className="px-4 sm:px-5 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors">
                 Close
               </button>
             </div>
@@ -675,145 +680,135 @@ const PriceGenix = () => {
       );
     }
 
+    // PROMOTION POPUP
     if (popupType === 'contribution') {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
-          <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Promotion Analysis</h3>
-                  <p className="text-sm text-gray-500 mt-1">Comprehensive promotion effectiveness metrics</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Promotion Analysis</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">Comprehensive promotion effectiveness metrics</p>
                 </div>
-                <button onClick={() => setShowPopup(false)} className="w-10 h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors">
-                  <X className="w-5 h-5 text-gray-600" />
+                <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 bg-white">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-w-6xl mx-auto">
-                
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <DollarSign className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Average Pricing</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Avg. List Price</span>
-                      <span className="text-lg font-bold text-gray-900">₹{currentPromotionData.avgListPrice.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Avg. Sale Price @PGP</span>
-                      <span className="text-lg font-bold text-emerald-700">₹{currentPromotionData.avgSalePrice.toLocaleString()}</span>
-                    </div>
-                    <div className="pt-2 border-t-2 border-gray-300 bg-violet-50 rounded-lg p-3 -mx-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <ArrowDown className="w-4 h-4 text-violet-600" />
-                          <span className="text-xs font-bold text-gray-700">Discount Savings</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-violet-700">₹{priceDifference.toLocaleString()}</p>
-                          <p className="text-[10px] font-semibold text-violet-600">({discountPercent}% off)</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <Zap className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Incremental ROI</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Inc. Sales / Rs. Discount</span>
-                      <span className="text-lg font-bold text-emerald-700">₹{currentPromotionData.incrementalROI.salesPerRs.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="text-xs font-semibold text-gray-700">Inc. GP / Rs. Discount</span>
-                      <span className="text-lg font-bold text-emerald-700">₹{currentPromotionData.incrementalROI.gpPerRs.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between items-center pb-2">
-                      <span className="text-xs font-semibold text-gray-700">Inc. Units / Rs. Discount</span>
-                      <span className="text-lg font-bold text-gray-900">{currentPromotionData.incrementalROI.unitsPerRs.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5 lg:col-span-2">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <Percent className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Percentage Under Promotion</h4>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <DollarSign className="w-4 h-4 text-violet-600" strokeWidth={2.5} />
-                        <p className="text-xs font-bold text-gray-700">Sale</p>
-                      </div>
-                      <p className="text-3xl font-bold text-violet-700">{currentPromotionData.percentUnderPromotion.sales}%</p>
-                    </div>
-                    <div className="text-center bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <TrendingUp className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
-                        <p className="text-xs font-bold text-gray-700">Profit</p>
-                      </div>
-                      <p className="text-3xl font-bold text-emerald-700">{currentPromotionData.percentUnderPromotion.profit}%</p>
-                    </div>
-                    <div className="text-center bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <Package className="w-4 h-4 text-blue-600" strokeWidth={2.5} />
-                        <p className="text-xs font-bold text-gray-700">Units</p>
-                      </div>
-                      <p className="text-3xl font-bold text-blue-700">{currentPromotionData.percentUnderPromotion.units}%</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg border-2 border-gray-200 p-5 lg:col-span-2">
-                  <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-gray-300">
-                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200">
-                      <BarChart3 className="w-5 h-5 text-gray-700" />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900">Promotion Effectiveness</h4>
-                  </div>
-                  <div className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
-                    <table className="w-full text-sm">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-white">
+              <div className="space-y-5 sm:space-y-6">
+                {/* Pricing Table */}
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">Pricing</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="text-left py-3 px-4 font-bold text-gray-900 border-b-2 border-gray-300"></th>
-                          <th className="text-right py-3 px-4 font-bold text-gray-900 border-b-2 border-gray-300">Sales / Rs.</th>
-                          <th className="text-right py-3 px-4 font-bold text-gray-900 border-b-2 border-gray-300">GP / Rs.</th>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Metric</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Value</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-4 font-bold text-gray-900">Base</td>
-                          <td className="py-3 px-4 text-right text-base font-bold text-gray-900">₹{currentPromotionData.effectiveness.base.salesPerRs}</td>
-                          <td className="py-3 px-4 text-right text-base font-bold text-gray-900">₹{currentPromotionData.effectiveness.base.gpPerRs}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Avg. List Price</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-gray-900">₹ {currentPromotionData.avgListPrice.toLocaleString()}</td>
+                        </tr>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Avg. Sale Price @PGP</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-emerald-700">₹ {currentPromotionData.avgSalePrice.toLocaleString()}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Incremental ROI Table */}
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">Incremental Promotion ROI</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Metric</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Value</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Incremental GMV / Rs. Discount</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-emerald-700">₹ {currentPromotionData.incrementalROI.gmvPerRs.toFixed(2)}</td>
+                        </tr>
+                        <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Incremental GP / Rs. Discount</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-emerald-700">₹ {currentPromotionData.incrementalROI.gpPerRs.toFixed(2)}</td>
+                        </tr>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Incremental Units / Rs. Discount</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-gray-900">{currentPromotionData.incrementalROI.unitsPerRs.toFixed(2)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* % Under Promotion Table */}
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">% Under Promotion</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Metric</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        <tr className="bg-violet-50 hover:bg-violet-100 transition-colors border-b border-gray-200">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">% Sale under Promotion</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-lg sm:text-xl font-bold text-violet-700">{currentPromotionData.percentUnderPromotion.sales}%</td>
+                        </tr>
+                        <tr className="bg-violet-50 hover:bg-violet-100 transition-colors border-b border-gray-200">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">% Profit under Promotion</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-lg sm:text-xl font-bold text-violet-700">{currentPromotionData.percentUnderPromotion.profit}%</td>
+                        </tr>
+                        <tr className="bg-blue-50 hover:bg-blue-100 transition-colors">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">% Units under Promotion</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-lg sm:text-xl font-bold text-blue-700">{currentPromotionData.percentUnderPromotion.units}%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Promotion Effectiveness */}
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">Promotion Effectiveness</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="w-full text-xs sm:text-sm min-w-[350px]">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300"></th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GMV / Rs.</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GP / Rs.</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Base</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gmvPerRs}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gpPerRs}</td>
                         </tr>
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-4 font-bold text-gray-900">Test</td>
-                          <td className="py-3 px-4 text-right text-base font-bold text-gray-900">₹{currentPromotionData.effectiveness.test.salesPerRs}</td>
-                          <td className="py-3 px-4 text-right text-base font-bold text-gray-900">₹{currentPromotionData.effectiveness.test.gpPerRs}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gmvPerRs}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gpPerRs}</td>
                         </tr>
                         <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors">
-                          <td className="py-3 px-4 font-bold text-gray-900 flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
-                            Incremental
-                          </td>
-                          <td className="py-3 px-4 text-right text-lg font-bold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.salesPerRs}</td>
-                          <td className="py-3 px-4 text-right text-lg font-bold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gpPerRs}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Incremental</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gmvPerRs}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gpPerRs}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -822,8 +817,8 @@ const PriceGenix = () => {
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0">
-              <button onClick={() => setShowPopup(false)} className="px-5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0">
+              <button onClick={() => setShowPopup(false)} className="px-4 sm:px-5 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors">
                 Close
               </button>
             </div>
@@ -836,29 +831,29 @@ const PriceGenix = () => {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
           <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-200 bg-gray-50">
+            <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Price-Sales-Competition Analysis</h3>
-                  <p className="text-sm text-gray-500 mt-1">Comprehensive market analysis charts</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Price-Sales-Competition Analysis</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">Comprehensive market analysis charts</p>
                 </div>
-                <button onClick={() => setShowPopup(false)} className="w-10 h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors">
-                  <X className="w-5 h-5 text-gray-600" />
+                <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </button>
               </div>
             </div>
 
-            <div className="p-6 bg-white">
-              <div className="h-96 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
+            <div className="p-4 sm:p-6 bg-white">
+              <div className="h-64 sm:h-96 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                  <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-3" />
-                  <p className="text-sm text-gray-500">Charts: Bars, Pies, Scatters (To be implemented)</p>
+                  <BarChart3 className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3" />
+                  <p className="text-xs sm:text-sm text-gray-500">Charts: Bars, Pies, Scatters (To be implemented)</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-end">
-              <button onClick={() => setShowPopup(false)} className="px-5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex justify-end">
+              <button onClick={() => setShowPopup(false)} className="px-4 sm:px-5 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors">
                 Close
               </button>
             </div>
@@ -872,7 +867,6 @@ const PriceGenix = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 🔥 FIXED: Only render sidebar when NOT in history mode */}
       {viewMode !== 'history' && (
         <PriceGenixSidebar 
           isOpen={sidebarOpen} 
@@ -888,60 +882,59 @@ const PriceGenix = () => {
         />
       )}
       
-      <Navbar toggleSidebar={toggleSidebar} showMenuButton={viewMode !== 'history'} currentProduct="pricegenix" />
+      <Navbar 
+        toggleSidebar={toggleSidebar} 
+        showMenuButton={viewMode !== 'history'} 
+        currentProduct="pricegenix"
+        onLogoClick={() => navigate('/dashboard')}
+      />
       
-      {/* 🔥 FIXED: Full width in history mode */}
       <div className={`pt-16 transition-all duration-300 ${viewMode === 'history' ? 'ml-0' : 'lg:ml-[320px]'}`}>
         <div className="p-4 sm:p-6 space-y-4">
-          {/* 🔥 COMPACT HISTORY BANNER - Matches UI Theme */}
           {viewMode === 'history' && selectedHistoryItem && (
-            <div className="bg-white rounded-lg p-4 shadow-sm border-2 border-gray-300">
-              <div className="flex items-center justify-between gap-4">
-                {/* Left: Info Section */}
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Eye className="w-5 h-5 text-white" strokeWidth={2} />
+            <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border-2 border-gray-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-gray-900 truncate">{selectedHistoryItem.name}</h3>
-                    <div className="flex items-center gap-3 mt-0.5">
-                      <p className="text-xs text-gray-500 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 truncate">{selectedHistoryItem.name}</h3>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-0.5">
+                      <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1">
+                        <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         {selectedHistoryItem.date}
                       </p>
-                      <span className="text-xs text-gray-400">•</span>
-                      <p className="text-xs font-medium text-gray-700">{selectedHistoryItem.objective}</p>
-                      <span className="text-xs text-gray-400">•</span>
-                      <p className="text-xs text-gray-600">{selectedHistoryItem.constraints}</p>
+                      <span className="text-[10px] sm:text-xs text-gray-400">•</span>
+                      <p className="text-[10px] sm:text-xs font-medium text-gray-700">{selectedHistoryItem.objective}</p>
+                      <span className="text-[10px] sm:text-xs text-gray-400">•</span>
+                      <p className="text-[10px] sm:text-xs text-gray-600">{selectedHistoryItem.constraints}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Right: Back Button */}
                 <button
                   onClick={handleBackToCurrent}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-semibold hover:bg-gray-800 transition-colors shadow-sm flex-shrink-0"
+                  className="flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-gray-900 text-white rounded-lg text-[10px] sm:text-xs font-semibold hover:bg-gray-800 transition-colors shadow-sm flex-shrink-0 w-full sm:w-auto"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  <ChevronLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={2.5} />
                   Back
                 </button>
               </div>
             </div>
           )}
 
-          {/* SCORING LEVELS + PAST ITERATIONS - Only show in current mode */}
           {viewMode === 'current' && (
             <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                {/* LEFT: Scoring Levels */}
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                   <label className="text-xs sm:text-sm font-semibold text-gray-900">Scoring Levels</label>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {scoringOptions.map((option) => (
                       <button
                         key={option}
                         onClick={() => toggleScoringLevel(option)}
-                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        className={`px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all ${
                           scoringLevels.includes(option)
                             ? 'bg-gray-900 text-white'
                             : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-900'
@@ -953,20 +946,18 @@ const PriceGenix = () => {
                   </div>
                 </div>
 
-                {/* SEPARATOR */}
                 <div className="hidden lg:block w-px h-16 bg-gray-300 self-stretch"></div>
 
-                {/* RIGHT: Past Iterations */}
                 <div className="flex flex-col gap-2 lg:w-auto lg:min-w-[280px]">
                   <label className="text-xs sm:text-sm font-semibold text-gray-900">Past Iterations</label>
                   <div className="relative">
                     <button 
                       onClick={() => setIsHistoryDropdownOpen(!isHistoryDropdownOpen)}
-                      className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition-colors"
+                      className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-[10px] sm:text-xs font-medium hover:bg-gray-800 transition-colors"
                     >
-                      <History className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <History className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                       <span>View History ({mockPastIterations.length})</span>
-                      <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transform transition-transform ${isHistoryDropdownOpen ? 'rotate-90' : ''}`} />
+                      <ChevronRight className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 transform transition-transform ${isHistoryDropdownOpen ? 'rotate-90' : ''}`} />
                     </button>
                     
                     {isHistoryDropdownOpen && (
@@ -990,7 +981,7 @@ const PriceGenix = () => {
                               >
                                 <div className="flex items-center justify-between mb-1">
                                   <p className="text-xs sm:text-sm font-medium text-gray-900 group-hover/item:text-blue-600">{iteration.name}</p>
-                                  <Eye className="w-3.5 h-3.5 text-gray-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                                  <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
                                 </div>
                                 <p className="text-[10px] text-gray-500">{iteration.date}</p>
                                 <div className="flex items-center gap-2 mt-1.5">
@@ -1016,37 +1007,36 @@ const PriceGenix = () => {
 
           {hasResults ? (
             <>
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div 
                   onClick={() => handleCardClick('comparison')}
-                  className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
+                  className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-900">Performance</h3>
-                    <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">Performance</h3>
+                    <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs">
                     <div>
                       <p className="text-gray-500">Base Sales</p>
-                      <p className="font-semibold text-gray-900">₹{(currentBaseCondition.sales / 1000).toFixed(0)}K</p>
+                      <p className="font-semibold text-gray-900">₹{(mockPerformanceData.base.sales / 1000000).toFixed(1)}M</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-gray-500">Optimized</p>
-                      <p className="font-semibold text-emerald-700">₹{(currentOptimizedCondition.sales / 1000).toFixed(0)}K <span className="text-[10px]">+{growth.sales}%</span></p>
+                      <p className="text-gray-500">Test Sales</p>
+                      <p className="font-semibold text-emerald-700">₹{(mockPerformanceData.test.sales / 1000000).toFixed(1)}M</p>
                     </div>
                   </div>
                 </div>
 
                 <div 
                   onClick={() => handleCardClick('topArticles')}
-                  className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
+                  className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-900">Top Articles</h3>
-                    <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">Top Articles</h3>
+                    <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
                   </div>
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-1 text-[10px] sm:text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-500">Top 50%</span>
                       <span className="font-medium text-gray-900">{currentTopArticlesSummary.top50.count.toLocaleString()}</span>
@@ -1060,73 +1050,70 @@ const PriceGenix = () => {
 
                 <div 
                   onClick={() => handleCardClick('contribution')}
-                  className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
+                  className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-900">Promotions</h3>
-                    <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">Promotions</h3>
+                    <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
                   </div>
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-1 text-[10px] sm:text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-500">ROI / Rs.</span>
-                      <span className="font-medium text-gray-900">₹{currentPromotionData.incrementalROI.salesPerRs.toFixed(2)}</span>
+                      <span className="font-medium text-gray-900">₹{mockPromotionData.incrementalROI.gmvPerRs.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">% Sale</span>
-                      <span className="font-medium text-gray-900">{currentPromotionData.percentUnderPromotion.sales}%</span>
+                      <span className="font-medium text-gray-900">{mockPromotionData.percentUnderPromotion.sales}%</span>
                     </div>
                   </div>
                 </div>
 
                 <div 
                   onClick={() => handleCardClick('charts')}
-                  className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
+                  className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-900">Analysis</h3>
-                    <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">Analysis</h3>
+                    <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
                   </div>
                   <div className="flex items-center justify-center h-12">
-                    <BarChart3 className="w-8 h-8 text-gray-400 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
+                    <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-gray-400 group-hover:text-gray-900 transition-colors" />
                   </div>
-                  <p className="text-[10px] text-center text-gray-500 mt-2">Price-Sales-Competition</p>
                 </div>
               </div>
 
-              {/* Results Table */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-3 sm:p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50">
+                {/* 🔥 UPDATED RESULTS HEADER */}
+                <div className="p-3 sm:p-4 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                   <div>
-                    <h2 className="text-sm font-semibold text-gray-900">
-                      {viewMode === 'history' ? 'Historical Results' : 'Optimized Results'}
-                    </h2>
-                    <p className="text-xs text-gray-500">Click row for detailed analysis</p>
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900">Optimized Results</h3>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Click row for detailed analysis</p>
                   </div>
                   <button
                     onClick={handleDownload}
-                    className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-xs font-medium"
+                    className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-[10px] sm:text-xs font-medium hover:bg-gray-800 transition-colors shadow-sm w-full sm:w-auto justify-center"
                   >
-                    <Download className="w-3.5 h-3.5" strokeWidth={2} />
-                    Export CSV
+                    <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span>Export CSV</span>
                   </button>
                 </div>
-                
-                <div className="overflow-x-auto max-h-[400px]">
-                  <table className="w-full text-xs min-w-max">
-                    <thead className="sticky top-0 bg-gray-50 border-b border-gray-200">
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[10px] sm:text-xs min-w-[900px]">
+                    <thead className="bg-gray-50 border-b-2 border-gray-300">
                       <tr>
-                        <th className="text-left py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Article</th>
-                        <th className="text-left py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Status</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Stock</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">MOP</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">NLC</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Max Price</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Min Price</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Reco. Price</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Discount</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Discount %</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">Units</th>
-                        <th className="text-right py-2 px-3 text-[10px] font-medium text-gray-500 whitespace-nowrap">DR</th>
+                        <th className="text-left py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Article</th>
+                        <th className="text-center py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Status</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Stock</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">MOP</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">NLC</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Max Price</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Min Price</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900 bg-emerald-50">Reco Price</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Discount</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Discount %</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Units</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">DR</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white">
@@ -1134,26 +1121,30 @@ const PriceGenix = () => {
                         <tr 
                           key={index} 
                           onClick={() => handleRowClick(row)}
-                          className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="border-b border-gray-100 hover:bg-blue-50 transition-colors cursor-pointer group"
                         >
-                          <td className="py-2 px-3 font-medium text-blue-600 whitespace-nowrap">{row.article}</td>
-                          <td className="py-2 px-3 whitespace-nowrap">
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                              row.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 font-medium text-gray-900">{row.article}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-center">
+                            <span className={`inline-flex px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium ${
+                              row.status === 'Completed' 
+                                ? 'bg-green-100 text-green-700' 
+                                : 'bg-yellow-100 text-yellow-700'
                             }`}>
                               {row.status}
                             </span>
                           </td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">{row.stock}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">₹{row.mop}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">₹{row.nlc}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">₹{row.maxPrice}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">₹{row.minPrice}</td>
-                          <td className="py-2 px-3 text-right font-medium text-emerald-700 whitespace-nowrap">₹{row.recoPrice}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">₹{row.discount}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">{row.discountPercent}%</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">{row.units}</td>
-                          <td className="py-2 px-3 text-right text-gray-600 whitespace-nowrap">{row.dr}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.stock}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.mop}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.nlc}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.maxPrice}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.minPrice}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right font-bold text-emerald-700 bg-emerald-50">
+                            ₹{row.recoPrice}
+                          </td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.discount}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.discountPercent}%</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.units}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.dr}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1162,14 +1153,17 @@ const PriceGenix = () => {
               </div>
             </>
           ) : (
-            <div className="bg-white rounded-lg p-8 sm:p-12 shadow-sm border border-gray-200 text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
-                <Target className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" strokeWidth={2} />
+            // 🔥 UPDATED NO RESULTS STATE - REMOVED BUTTONS
+            <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 p-8 sm:p-12 text-center">
+              <div className="max-w-md mx-auto">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <Target className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2">Ready to Optimize</h3>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Configure parameters in the sidebar and click "Run Engine" to start optimization
+                </p>
               </div>
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Ready to Optimize</h2>
-              <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">
-                Configure parameters in the sidebar and click "Run Engine" to start optimization
-              </p>
             </div>
           )}
         </div>

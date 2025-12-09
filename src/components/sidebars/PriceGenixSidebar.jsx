@@ -21,7 +21,6 @@ const PriceGenixSidebar = ({
   const [isDragging, setIsDragging] = useState(false);
 
 
-  // REORDERED: Sales first, then Profit
   const optimizationOptions = [
     { id: 'sales', label: 'Sales Maximization', icon: TrendingUp },
     { id: 'profit', label: 'Profit Maximization', icon: DollarSign },
@@ -34,8 +33,8 @@ const PriceGenixSidebar = ({
     { value: 'Sales', unit: '₹', hasFormat: false },
     { value: 'Profit', unit: '₹', hasFormat: false },
     { value: 'Profit Percentage', unit: '%', hasFormat: false },
-    { value: 'Units', unit: '', hasFormat: true }, // Format selector
-    { value: 'Discount', unit: '', hasFormat: true }, // Format selector
+    { value: 'Units', unit: '', hasFormat: true },
+    { value: 'Discount', unit: '', hasFormat: true },
   ];
 
 
@@ -77,11 +76,10 @@ const PriceGenixSidebar = ({
     const updated = [...constraints];
     updated[index] = { ...updated[index], [field]: value };
     
-    // When type changes, set default format to PERCENTAGE if applicable
     if (field === 'type') {
       const constraintType = constraintTypes.find(ct => ct.value === value);
       if (constraintType?.hasFormat) {
-        updated[index].format = 'percentage'; // DEFAULT IS PERCENTAGE
+        updated[index].format = 'percentage';
       } else {
         delete updated[index].format;
       }
@@ -96,7 +94,7 @@ const PriceGenixSidebar = ({
       ct => !constraints.some(c => c.type === ct.value)
     );
     if (availableTypes.length > 0) {
-      onConstraintsChange([...constraints, { type: '', minimum: '', maximum: '', format: 'percentage' }]); // DEFAULT PERCENTAGE
+      onConstraintsChange([...constraints, { type: '', minimum: '', maximum: '', format: 'percentage' }]);
     }
   };
 
@@ -138,30 +136,28 @@ const PriceGenixSidebar = ({
         </button>
 
 
-        {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
-          {/* Logo */}
           <div className="p-6 border-b border-border-gray">
             <div className="flex justify-center mb-3">
               <img 
                 src="/optinyxuslogo.png" 
                 alt="OptiNyxus"
-                className="h-14 w-auto"
+                className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => navigate('/dashboard')}
               />
             </div>
             
-            {/* Home Button */}
+            {/* 🔥 COMPACT DASHBOARD HOME BUTTON */}
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-card border border-border-gray hover:shadow-premium-md hover:border-secondary-text transition-all duration-200 group"
+              className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-card border border-border-gray hover:shadow-premium-md hover:border-secondary-text transition-all duration-200 group"
             >
-              <Home className="w-3.5 h-3.5 text-secondary-text group-hover:text-primary-text transition-colors" strokeWidth={2} />
-              <span className="text-xs font-semibold text-secondary-text group-hover:text-primary-text transition-colors">Dashboard Home</span>
+              <Home className="w-3 h-3 text-secondary-text group-hover:text-primary-text transition-colors" strokeWidth={2} />
+              <span className="text-[10px] font-semibold text-secondary-text group-hover:text-primary-text transition-colors">Dashboard Home</span>
             </button>
           </div>
 
 
-          {/* Data Upload */}
           <div className="p-4 border-b border-border-gray">
             <div className="flex items-center gap-2 mb-3">
               <Upload className="w-4 h-4 text-secondary-text" strokeWidth={2} />
@@ -217,10 +213,9 @@ const PriceGenixSidebar = ({
             </div>
 
 
-            {/* Run Button */}
             <button
               onClick={onRunOptimization}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-success text-white rounded-xl hover:shadow-premium-xl transition-all duration-300 transform hover:scale-[1.02] font-bold text-sm shadow-premium-lg"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-success text-white rounded-xl hover:shadow-premium-xl transition-all duration-300 transform hover:scale-[1.02] font-bold text-base shadow-premium-lg"
             >
               <Play className="w-4 h-4 fill-white" strokeWidth={0} />
               <span>Run Engine</span>
@@ -228,11 +223,10 @@ const PriceGenixSidebar = ({
           </div>
 
 
-          {/* Optimization Strategy - STACKED VERTICAL */}
           <div className="p-4 border-b border-border-gray">
             <div className="flex items-center gap-2 mb-3">
               <Target className="w-4 h-4 text-secondary-text" strokeWidth={2} />
-              <h3 className="text-sm font-bold text-primary-text">Objective Function</h3>
+              <h3 className="text-sm font-bold text-primary-text">Objective</h3>
             </div>
             
             <div className="space-y-2">
@@ -250,14 +244,13 @@ const PriceGenixSidebar = ({
                     className={`w-5 h-5 flex-shrink-0 ${selectedOptimization === option.id ? 'text-white' : 'text-secondary-text'}`}
                     strokeWidth={2}
                   />
-                  <span className="text-xs font-semibold text-left flex-1">{option.label}</span>
+                  <span className="text-sm font-semibold text-left flex-1">{option.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
 
-          {/* Constraints */}
           <div className="p-4 border-b border-border-gray">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -298,7 +291,6 @@ const PriceGenixSidebar = ({
                       </div>
                       
                       <div className="space-y-2">
-                        {/* Type Selector */}
                         <div>
                           <label className="block text-[9px] text-muted-text mb-1 font-medium">Type</label>
                           <select
@@ -319,7 +311,6 @@ const PriceGenixSidebar = ({
                           </select>
                         </div>
                         
-                        {/* Format Selector (Only for Units & Discount) - DEFAULT PERCENTAGE */}
                         {showFormatSelector && (
                           <div>
                             <label className="block text-[9px] text-muted-text mb-1 font-medium">Format</label>
@@ -334,7 +325,6 @@ const PriceGenixSidebar = ({
                           </div>
                         )}
                         
-                        {/* Min Max Inputs */}
                         <div className="grid grid-cols-2 gap-2">
                           <div>
                             <label className="block text-[9px] text-muted-text mb-1 font-medium">
@@ -368,19 +358,19 @@ const PriceGenixSidebar = ({
             </div>
           </div>
 
-          {/* Extra padding at bottom to ensure last constraint is visible */}
+
           <div className="h-4"></div>
         </div>
 
 
-        {/* Fixed Reset Button at Bottom */}
+        {/* 🔥 REVERSED RESET BUTTON - Red by default, changes to darker on hover */}
         <div className="border-t border-border-gray bg-card-bg p-4 flex-shrink-0">
           <button
             onClick={onReset}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border-2 border-border-gray text-secondary-text rounded-xl hover:border-red-500 hover:text-red-500 hover:bg-red-50 transition-all duration-300 font-semibold text-sm"
+            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-red-50 border border-red-400 text-red-600 rounded-lg hover:bg-red-100 hover:border-red-500 hover:text-red-700 transition-all duration-300 font-medium text-xs"
           >
-            <RotateCcw className="w-4 h-4" strokeWidth={2} />
-            <span>Reset All</span>
+            <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
+            <span>Reset</span>
           </button>
         </div>
       </div>

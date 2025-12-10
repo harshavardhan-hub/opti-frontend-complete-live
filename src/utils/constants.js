@@ -16,7 +16,7 @@ export const PRODUCTS = [
   },
   {
     id: 'pricegenix',
-    name: 'PriceGenix',
+    name: 'PriceGenix AI',
     description: 'AI-powered price optimization engine for maximizing revenue and profitability',
     path: '/dashboard/pricegenix',
     icon: DollarSign,

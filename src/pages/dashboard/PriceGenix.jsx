@@ -415,12 +415,12 @@ const PriceGenix = () => {
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">{currentPerformanceData.growth.units.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">{currentPerformanceData.growth.profitability.toFixed(2)}%</td>
                     </tr>
-                    <tr className="bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <tr className="bg-amber-50 hover:bg-amber-100 transition-colors">
                       <td className="py-2 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Growth %</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-blue-700">{currentPerformanceData.growthPercent.sales}%</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-blue-700">{currentPerformanceData.growthPercent.profit}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-amber-700">{currentPerformanceData.growthPercent.sales}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-amber-700">{currentPerformanceData.growthPercent.profit}%</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400">-</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-blue-700">{currentPerformanceData.growthPercent.units}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-amber-700">{currentPerformanceData.growthPercent.units}%</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400">-</td>
                     </tr>
                   </tbody>
@@ -438,7 +438,6 @@ const PriceGenix = () => {
       );
     }
 
-    // 🔥 TOP ARTICLES POPUP - SINGLE COLOR RADIO BUTTONS, NO ICONS, RESPONSIVE
     if (popupType === 'topArticles') {
       const currentTop50Data = generateTop50MockData(topArticlesMetric);
       const currentTop80Data = generateTop80MockData(topArticlesMetric);
@@ -446,24 +445,24 @@ const PriceGenix = () => {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
           <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-            {/* HEADER */}
+            {/* 🔥 HEADER - RADIO BUTTONS ON RIGHT SIDE */}
             <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div className="flex items-center justify-between flex-1 min-w-0">
+                  <div>
                     <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Top Selling Articles Analysis</h3>
                     <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Complete breakdown by contribution</p>
                   </div>
-                  <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0 ml-2">
+                  <button onClick={() => setShowPopup(false)} className="lg:hidden w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0 ml-2">
                     <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                   </button>
                 </div>
                 
-                {/* 🔥 SINGLE COLOR RADIO BUTTONS - RESPONSIVE */}
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                {/* 🔥 RADIO BUTTONS - GRAY COLOR SCHEME */}
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:flex-nowrap">
                   <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
                     topArticlesMetric === 'sales'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}>
                     <input
@@ -479,7 +478,7 @@ const PriceGenix = () => {
 
                   <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
                     topArticlesMetric === 'profit'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}>
                     <input
@@ -495,7 +494,7 @@ const PriceGenix = () => {
 
                   <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
                     topArticlesMetric === 'units'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}>
                     <input
@@ -511,7 +510,7 @@ const PriceGenix = () => {
 
                   <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
                     topArticlesMetric === 'discount'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-gray-900 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}>
                     <input
@@ -524,6 +523,10 @@ const PriceGenix = () => {
                     />
                     Discount
                   </label>
+
+                  <button onClick={() => setShowPopup(false)} className="hidden lg:flex w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 items-center justify-center transition-colors flex-shrink-0 ml-2">
+                    <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -584,20 +587,20 @@ const PriceGenix = () => {
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                           <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Top 50%</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.sales.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.avgPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.maxPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.minPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top50.discount.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.sales.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.avgPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.maxPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.minPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.discount.toLocaleString()}</td>
                           <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top50.count.toLocaleString()}</td>
                         </tr>
                         <tr className="hover:bg-gray-50 transition-colors">
                           <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Top 80%</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.sales.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.avgPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.maxPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.minPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹ {currentTopArticlesSummary.top80.discount.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.sales.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.avgPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.maxPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.minPrice.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.discount.toLocaleString()}</td>
                           <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top80.count.toLocaleString()}</td>
                         </tr>
                       </tbody>
@@ -622,10 +625,10 @@ const PriceGenix = () => {
                       </thead>
                       <tbody className="bg-white">
                         {currentTop50Data.map((article, index) => (
-                          <tr key={index} className="border-b border-gray-100 hover:bg-indigo-50 transition-colors">
+                          <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">{article.id}</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-gray-900">{article.name}</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-indigo-700">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.minPrice / 1000).toFixed(0)}K</td>
@@ -653,10 +656,10 @@ const PriceGenix = () => {
                       </thead>
                       <tbody className="bg-white">
                         {currentTop80Data.map((article, index) => (
-                          <tr key={index} className="border-b border-gray-100 hover:bg-indigo-50 transition-colors">
+                          <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">{article.id}</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-gray-900">{article.name}</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-indigo-700">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.minPrice / 1000).toFixed(0)}K</td>
@@ -680,12 +683,12 @@ const PriceGenix = () => {
       );
     }
 
-    // PROMOTION POPUP
+    // 🔥 PROMOTION POPUP - WITH AMBER COLOR
     if (popupType === 'contribution') {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
-          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+          <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0 rounded-t-xl">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Promotion Analysis</h3>
@@ -698,117 +701,99 @@ const PriceGenix = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-white">
-              <div className="space-y-5 sm:space-y-6">
-                {/* Pricing Table */}
+              <div className="space-y-4 sm:space-y-5">
+                {/* 🔥 Pricing Table */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">Pricing</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Pricing</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Metric</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Value</th>
-                        </tr>
-                      </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Avg. List Price</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-gray-900">₹ {currentPromotionData.avgListPrice.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Avg. List Price</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-gray-900">₹{currentPromotionData.avgListPrice.toLocaleString()}</td>
                         </tr>
                         <tr className="hover:bg-gray-50 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Avg. Sale Price @PGP</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-emerald-700">₹ {currentPromotionData.avgSalePrice.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Avg. Sale Price @PGP</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-emerald-700">₹{currentPromotionData.avgSalePrice.toLocaleString()}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                {/* Incremental ROI Table */}
+                {/* 🔥 Incremental ROI Table */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">Incremental Promotion ROI</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Incremental Promotion ROI</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Metric</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Value</th>
-                        </tr>
-                      </thead>
                       <tbody className="bg-white">
                         <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Incremental GMV / Rs. Discount</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-emerald-700">₹ {currentPromotionData.incrementalROI.gmvPerRs.toFixed(2)}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Incremental GMV / Rs. Discount</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-emerald-700">₹{currentPromotionData.incrementalROI.gmvPerRs.toFixed(2)}</td>
                         </tr>
                         <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Incremental GP / Rs. Discount</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-emerald-700">₹ {currentPromotionData.incrementalROI.gpPerRs.toFixed(2)}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Incremental GP / Rs. Discount</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-emerald-700">₹{currentPromotionData.incrementalROI.gpPerRs.toFixed(2)}</td>
                         </tr>
                         <tr className="hover:bg-gray-50 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Incremental Units / Rs. Discount</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-base sm:text-lg font-bold text-gray-900">{currentPromotionData.incrementalROI.unitsPerRs.toFixed(2)}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Incremental Units / Rs. Discount</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-gray-900">{currentPromotionData.incrementalROI.unitsPerRs.toFixed(2)}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                {/* % Under Promotion Table */}
+                {/* 🔥 % Under Promotion Table - CHANGED TO AMBER */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">% Under Promotion</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">% Under Promotion</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Metric</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Percentage</th>
-                        </tr>
-                      </thead>
                       <tbody className="bg-white">
-                        <tr className="bg-violet-50 hover:bg-violet-100 transition-colors border-b border-gray-200">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">% Sale under Promotion</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-lg sm:text-xl font-bold text-violet-700">{currentPromotionData.percentUnderPromotion.sales}%</td>
+                        <tr className="bg-amber-50 hover:bg-amber-100 transition-colors border-b border-gray-200">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">% Sale under Promotion</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-lg font-bold text-amber-700">{currentPromotionData.percentUnderPromotion.sales}%</td>
                         </tr>
-                        <tr className="bg-violet-50 hover:bg-violet-100 transition-colors border-b border-gray-200">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">% Profit under Promotion</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-lg sm:text-xl font-bold text-violet-700">{currentPromotionData.percentUnderPromotion.profit}%</td>
+                        <tr className="bg-amber-50 hover:bg-amber-100 transition-colors border-b border-gray-200">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">% Profit under Promotion</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-lg font-bold text-amber-700">{currentPromotionData.percentUnderPromotion.profit}%</td>
                         </tr>
-                        <tr className="bg-blue-50 hover:bg-blue-100 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">% Units under Promotion</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-lg sm:text-xl font-bold text-blue-700">{currentPromotionData.percentUnderPromotion.units}%</td>
+                        <tr className="bg-amber-50 hover:bg-amber-100 transition-colors">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">% Units under Promotion</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-lg font-bold text-amber-700">{currentPromotionData.percentUnderPromotion.units}%</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                {/* Promotion Effectiveness */}
+                {/* 🔥 Promotion Effectiveness */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">Promotion Effectiveness</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Promotion Effectiveness</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm min-w-[350px]">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300"></th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GMV / Rs.</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GP / Rs.</th>
+                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300"></th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GMV / Rs.</th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GP / Rs.</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Base</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gmvPerRs}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gpPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Base</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gmvPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gpPerRs}</td>
                         </tr>
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gmvPerRs}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gpPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gmvPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gpPerRs}</td>
                         </tr>
                         <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors">
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Incremental</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gmvPerRs}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gpPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-bold text-gray-900">Incremental</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gmvPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gpPerRs}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -817,7 +802,7 @@ const PriceGenix = () => {
               </div>
             </div>
 
-            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0">
+            <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex justify-end flex-shrink-0 rounded-b-xl">
               <button onClick={() => setShowPopup(false)} className="px-4 sm:px-5 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors">
                 Close
               </button>
@@ -980,12 +965,12 @@ const PriceGenix = () => {
                                 className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg transition-colors group/item"
                               >
                                 <div className="flex items-center justify-between mb-1">
-                                  <p className="text-xs sm:text-sm font-medium text-gray-900 group-hover/item:text-blue-600">{iteration.name}</p>
+                                  <p className="text-xs sm:text-sm font-medium text-gray-900 group-hover/item:text-gray-900">{iteration.name}</p>
                                   <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
                                 </div>
                                 <p className="text-[10px] text-gray-500">{iteration.date}</p>
                                 <div className="flex items-center gap-2 mt-1.5">
-                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700">
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">
                                     {iteration.objective}
                                   </span>
                                   <span className="text-[10px] text-gray-500">•</span>
@@ -1083,7 +1068,6 @@ const PriceGenix = () => {
               </div>
 
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {/* 🔥 UPDATED RESULTS HEADER */}
                 <div className="p-3 sm:p-4 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                   <div>
                     <h3 className="text-sm sm:text-base font-bold text-gray-900">Optimized Results</h3>
@@ -1121,7 +1105,7 @@ const PriceGenix = () => {
                         <tr 
                           key={index} 
                           onClick={() => handleRowClick(row)}
-                          className="border-b border-gray-100 hover:bg-blue-50 transition-colors cursor-pointer group"
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer group"
                         >
                           <td className="py-2 sm:py-2.5 px-2 sm:px-3 font-medium text-gray-900">{row.article}</td>
                           <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-center">
@@ -1153,7 +1137,6 @@ const PriceGenix = () => {
               </div>
             </>
           ) : (
-            // 🔥 UPDATED NO RESULTS STATE - REMOVED BUTTONS
             <div className="bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 p-8 sm:p-12 text-center">
               <div className="max-w-md mx-auto">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">

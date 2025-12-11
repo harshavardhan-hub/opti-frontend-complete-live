@@ -6,11 +6,13 @@ import { TrendingUp, DollarSign, Percent, Package, Award, Target, BarChart3, Dow
 
 // Mock Data
 const mockOptimizationResults = [
-  { article: '#1234', status: 'In-Progress', stock: 50, mop: 100, nlc: 75, maxPrice: 120, minPrice: 80, recoPrice: 95, discount: 5, discountPercent: 5.3, units: 67, dr: 1.2 },
-  { article: '#1235', status: 'Completed', stock: 45, mop: 110, nlc: 80, maxPrice: 130, minPrice: 85, recoPrice: 105, discount: 5, discountPercent: 4.8, units: 72, dr: 1.3 },
-  { article: '#1236', status: 'In-Progress', stock: 60, mop: 95, nlc: 70, maxPrice: 115, minPrice: 75, recoPrice: 90, discount: 5, discountPercent: 5.6, units: 65, dr: 1.1 },
-  { article: '#1237', status: 'Completed', stock: 55, mop: 105, nlc: 78, maxPrice: 125, minPrice: 82, recoPrice: 98, discount: 7, discountPercent: 6.7, units: 70, dr: 1.25 },
-  { article: '#1238', status: 'In-Progress', stock: 48, mop: 98, nlc: 72, maxPrice: 118, minPrice: 78, recoPrice: 92, discount: 6, discountPercent: 6.1, units: 68, dr: 1.15 },
+  { article: 'Bosch', status: 'Active', stock: 1000, mop: 36981, nlc: 30441, maxPrice: 36981, minPrice: 30441, testPrice: 32200, units: 378, sales: 12171600, profit: 664902, profitability: 5.46, profitUnit: 1759, discount: 1807169, discountPercent: 12.9, discountUnit: 4781 },
+  { article: 'Haier', status: 'Active', stock: 1000, mop: 19074, nlc: 16654, maxPrice: 19074, minPrice: 16654, testPrice: 18692, units: 63, sales: 1177610, profit: 128457, profitability: 10.91, profitUnit: 2039, discount: 24033, discountPercent: 2.0, discountUnit: 381 },
+  { article: 'IFB', status: 'Active', stock: 1000, mop: 34036, nlc: 29976, maxPrice: 34036, minPrice: 29976, testPrice: 30800, units: 337, sales: 10379600, profit: 277688, profitability: 2.68, profitUnit: 824, discount: 1090536, discountPercent: 9.5, discountUnit: 3236 },
+  { article: 'LG', status: 'Active', stock: 1000, mop: 32424, nlc: 27064, maxPrice: 32424, minPrice: 27064, testPrice: 28830, units: 885, sales: 25514550, profit: 1562910, profitability: 6.13, profitUnit: 1766, discount: 3180831, discountPercent: 11.1, discountUnit: 3594 },
+  { article: 'Samsung', status: 'Active', stock: 1000, mop: 25250, nlc: 22131, maxPrice: 25250, minPrice: 22131, testPrice: 24493, units: 667, sales: 16336708, profit: 1575454, profitability: 9.64, profitUnit: 2362, discount: 505259, discountPercent: 3.0, discountUnit: 758 },
+  { article: 'Whirlpool', status: 'Active', stock: 1000, mop: 19967, nlc: 16375, maxPrice: 19967, minPrice: 16375, testPrice: 19568, units: 550, sales: 10762167, profit: 1756150, profitability: 16.32, profitUnit: 3193, discount: 219636, discountPercent: 2.0, discountUnit: 399 },
+  { article: 'Portfolio', status: '', stock: 6000, mop: 28878, nlc: 24436, maxPrice: 0, minPrice: 0, testPrice: 26508, units: 2880, sales: 76342235, profit: 5965561, profitability: 7.81, profitUnit: 2071, discount: 6827464, discountPercent: 8.2, discountUnit: 2371 },
 ];
 
 const generateTop50MockData = (metric) => {
@@ -74,25 +76,32 @@ const mockPerformanceData = {
     profit: 5619493,
     discount: 6035879,
     units: 2823,
-    profitability: 7.81
+    profitability: 7.81,
+    avgSalePrice: 25478,
+    discountUnit: 2138
   },
   test: {
     sales: 76342235,
     profit: 5965561,
     discount: 6827464,
     units: 2880,
-    profitability: 7.81
+    profitability: 7.81,
+    avgSalePrice: 26508,
+    discountUnit: 2371
   },
   growth: {
     sales: 4419088,
     profit: 346068,
     discount: 791584,
     units: 57,
-    profitability: 0.00
+    profitability: 0.00,
+    avgSalePrice: 1030,
+    discountUnit: 233
   },
   growthPercent: {
     sales: 6.14,
     profit: 6.16,
+    discount: 13.11,
     units: 2.02
   }
 };
@@ -213,11 +222,11 @@ const PriceGenix = () => {
   };
 
   const handleDownload = () => {
-    const headers = ['Article', 'Status', 'Stock', 'MOP', 'NLC', 'Max Price', 'Min Price', 'Reco Price', 'Discount', 'Discount %', 'Units', 'DR'];
+    const headers = ['Article', 'Status', 'Stock', 'MOP', 'NLC', 'Max Price', 'Min Price', 'Test Price', 'Units', 'Sales', 'Profit', 'Profitability', 'Profit/Unit', 'Discount', 'Discount %', 'Discount/Unit'];
     const csvContent = [
       headers.join(','),
       ...resultsData.map(row => 
-        `${row.article},${row.status},${row.stock},${row.mop},${row.nlc},${row.maxPrice},${row.minPrice},${row.recoPrice},${row.discount},${row.discountPercent},${row.units},${row.dr}`
+        `${row.article},${row.status},${row.stock},${row.mop},${row.nlc},${row.maxPrice},${row.minPrice},${row.testPrice},${row.units},${row.sales},${row.profit},${row.profitability},${row.profitUnit},${row.discount},${row.discountPercent},${row.discountUnit}`
       )
     ].join('\n');
 
@@ -303,8 +312,8 @@ const PriceGenix = () => {
                   <p className="text-base sm:text-lg font-semibold text-gray-900">₹{selectedArticle.mop}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
-                  <p className="text-xs text-gray-500 mb-1">Recommended Price</p>
-                  <p className="text-base sm:text-lg font-semibold text-emerald-700">₹{selectedArticle.recoPrice}</p>
+                  <p className="text-xs text-gray-500 mb-1">Test Price</p>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">₹{selectedArticle.testPrice}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
                   <p className="text-xs text-gray-500 mb-1">Current Units</p>
@@ -369,7 +378,6 @@ const PriceGenix = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Performance Analysis</h3>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">Base vs Test comparison</p>
                 </div>
                 <button onClick={() => setShowPopup(false)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
                   <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
@@ -388,16 +396,20 @@ const PriceGenix = () => {
                       <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Discount</th>
                       <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Units</th>
                       <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Profitability</th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Avg. Sale Price</th>
+                      <th className="text-right py-2 sm:py-3 px-3 sm:px-4 font-medium text-gray-900 border-b-2 border-gray-300">Discount / Unit</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white">
                     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Base</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Control</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.sales.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.profit.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.discount.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.base.units.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.base.profitability}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.avgSalePrice.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.discountUnit.toLocaleString()}</td>
                     </tr>
                     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                       <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
@@ -406,22 +418,28 @@ const PriceGenix = () => {
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.discount.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.test.units.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.test.profitability}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.avgSalePrice.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.discountUnit.toLocaleString()}</td>
                     </tr>
-                    <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Growth</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPerformanceData.growth.sales.toLocaleString()}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPerformanceData.growth.profit.toLocaleString()}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPerformanceData.growth.discount.toLocaleString()}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">{currentPerformanceData.growth.units.toLocaleString()}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-700">{currentPerformanceData.growth.profitability.toFixed(2)}%</td>
+                    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Growth </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.growth.sales.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.growth.profit.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.growth.discount.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.growth.units.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.growth.profitability.toFixed(2)}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.growth.avgSalePrice.toLocaleString()}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.growth.discountUnit.toLocaleString()}</td>
                     </tr>
-                    <tr className="bg-amber-50 hover:bg-amber-100 transition-colors">
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-bold text-gray-900">Growth %</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-amber-700">{currentPerformanceData.growthPercent.sales}%</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-amber-700">{currentPerformanceData.growthPercent.profit}%</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400">-</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-semibold text-amber-700">{currentPerformanceData.growthPercent.units}%</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400">-</td>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Growth %</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.growthPercent.sales}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.growthPercent.profit}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.growthPercent.discount}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{currentPerformanceData.growthPercent.units}%</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400"> </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400"> </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-400"> </td>
                     </tr>
                   </tbody>
                 </table>
@@ -575,33 +593,36 @@ const PriceGenix = () => {
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Contribution</th>
+                          <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300"></th>
                           <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Sales</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg Price</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Max Price</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Min Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Profit</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Units</th>
                           <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Articles</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Profitability</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg. Sale Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount / Unit</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                           <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Top 50%</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.sales.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.avgPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.maxPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.minPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top50.discount.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top50.count.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹4,18,51,258</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹31,38,364</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹1,552</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹36,86,090</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">7.50%</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹26,966</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹2,375</td>
                         </tr>
                         <tr className="hover:bg-gray-50 transition-colors">
                           <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Top 80%</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.sales.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.avgPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.maxPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.minPrice.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentTopArticlesSummary.top80.discount.toLocaleString()}</td>
-                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{currentTopArticlesSummary.top80.count.toLocaleString()}</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹6,47,85,025</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹55,59,416</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹2,480</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹57,12,895</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">8.58%</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹26,123</td>
+                          <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹2,304</td>
                         </tr>
                       </tbody>
                     </table>
@@ -687,7 +708,7 @@ const PriceGenix = () => {
     if (popupType === 'contribution') {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
-          <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0 rounded-t-xl">
               <div className="flex items-center justify-between">
                 <div>
@@ -702,98 +723,70 @@ const PriceGenix = () => {
 
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-white">
               <div className="space-y-4 sm:space-y-5">
-                {/* 🔥 Pricing Table */}
+                {/* Promotion ROI Table */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Pricing</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Promotion ROI</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                      <tbody className="bg-white">
-                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Avg. List Price</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-gray-900">₹{currentPromotionData.avgListPrice.toLocaleString()}</td>
-                        </tr>
-                        <tr className="hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Avg. Sale Price @PGP</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-emerald-700">₹{currentPromotionData.avgSalePrice.toLocaleString()}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* 🔥 Incremental ROI Table */}
-                <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Incremental Promotion ROI</h4>
-                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                      <tbody className="bg-white">
-                        <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Incremental GMV / Rs. Discount</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-emerald-700">₹{currentPromotionData.incrementalROI.gmvPerRs.toFixed(2)}</td>
-                        </tr>
-                        <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-gray-200">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Incremental GP / Rs. Discount</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-emerald-700">₹{currentPromotionData.incrementalROI.gpPerRs.toFixed(2)}</td>
-                        </tr>
-                        <tr className="hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Incremental Units / Rs. Discount</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-base font-bold text-gray-900">{currentPromotionData.incrementalROI.unitsPerRs.toFixed(2)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* 🔥 % Under Promotion Table - CHANGED TO AMBER */}
-                <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">% Under Promotion</h4>
-                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                      <tbody className="bg-white">
-                        <tr className="bg-amber-50 hover:bg-amber-100 transition-colors border-b border-gray-200">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">% Sale under Promotion</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-lg font-bold text-amber-700">{currentPromotionData.percentUnderPromotion.sales}%</td>
-                        </tr>
-                        <tr className="bg-amber-50 hover:bg-amber-100 transition-colors border-b border-gray-200">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">% Profit under Promotion</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-lg font-bold text-amber-700">{currentPromotionData.percentUnderPromotion.profit}%</td>
-                        </tr>
-                        <tr className="bg-amber-50 hover:bg-amber-100 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">% Units under Promotion</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-lg font-bold text-amber-700">{currentPromotionData.percentUnderPromotion.units}%</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* 🔥 Promotion Effectiveness */}
-                <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Promotion Effectiveness</h4>
-                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm min-w-[350px]">
+                    <table className="w-full text-xs sm:text-sm min-w-[400px]">
                       <thead className="bg-gray-50">
-                        <tr>
-                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300"></th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GMV / Rs.</th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">GP / Rs.</th>
+                        <tr className="border-b border-gray-300">
+                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900"></th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Sales / Rs. Discount</th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Profits / Rs. Discount</th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Observations</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Base</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gmvPerRs}</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.base.gpPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Control</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 11.92</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 0.93</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
                         </tr>
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                           <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gmvPerRs}</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-700">₹{currentPromotionData.effectiveness.test.gpPerRs}</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 11.18</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 0.87</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
                         </tr>
-                        <tr className="bg-emerald-50 hover:bg-emerald-100 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-bold text-gray-900">Incremental</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gmvPerRs}</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right font-semibold text-emerald-700">₹{currentPromotionData.effectiveness.incremental.gpPerRs}</td>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 5.58</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 0.44</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Promotion Effectiveness Table */}
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Promotion Effectiveness</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                    <table className="w-full text-xs sm:text-sm min-w-[400px]">
+                      <thead className="bg-gray-50">
+                        <tr className="border-b border-gray-300">
+                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900"></th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Values</th>
+                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Observations</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental Sales / Unit</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 77,528</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                        </tr>
+                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental Profit / Unit</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 6,071</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                        </tr>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental Discount / Unit</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 13,887</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
                         </tr>
                       </tbody>
                     </table>
@@ -885,15 +878,20 @@ const PriceGenix = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-gray-900 truncate">{selectedHistoryItem.name}</h3>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-0.5">
+                    <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1">
                         <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         {selectedHistoryItem.date}
                       </p>
-                      <span className="text-[10px] sm:text-xs text-gray-400">•</span>
-                      <p className="text-[10px] sm:text-xs font-medium text-gray-700">{selectedHistoryItem.objective}</p>
-                      <span className="text-[10px] sm:text-xs text-gray-400">•</span>
-                      <p className="text-[10px] sm:text-xs text-gray-600">{selectedHistoryItem.constraints}</p>
+                    </div>
+                    <div className="mt-1.5 space-y-0.5">
+                      <p className="text-[10px] sm:text-xs text-gray-500">
+                        <span className="font-semibold text-gray-700">Objective:</span> {selectedHistoryItem.objective}
+                      </p>
+                      <div className="text-[10px] sm:text-xs text-gray-500">
+                        <span className="font-semibold text-gray-700">Constraints:</span>
+                        <span className="ml-1">{selectedHistoryItem.constraints}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -970,7 +968,7 @@ const PriceGenix = () => {
                                 </div>
                                 <p className="text-[10px] text-gray-500">{iteration.date}</p>
                                 <div className="flex items-center gap-2 mt-1.5">
-                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-gray-900">
                                     {iteration.objective}
                                   </span>
                                   <span className="text-[10px] text-gray-500">•</span>
@@ -1008,7 +1006,7 @@ const PriceGenix = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-gray-500">Test Sales</p>
-                      <p className="font-semibold text-emerald-700">₹{(mockPerformanceData.test.sales / 1000000).toFixed(1)}M</p>
+                      <p className="font-semibold text-gray-900">₹{(mockPerformanceData.test.sales / 1000000).toFixed(1)}M</p>
                     </div>
                   </div>
                 </div>
@@ -1083,21 +1081,25 @@ const PriceGenix = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-[10px] sm:text-xs min-w-[900px]">
+                  <table className="w-full text-[10px] sm:text-xs min-w-[1400px]">
                     <thead className="bg-gray-50 border-b-2 border-gray-300">
                       <tr>
-                        <th className="text-left py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Article</th>
+                        <th className="sticky left-0 z-10 bg-gray-50 text-left py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900 border-r-2 border-gray-300">Article</th>
                         <th className="text-center py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Status</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Stock</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">MOP</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">NLC</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Max Price</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Min Price</th>
-                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900 bg-emerald-50">Reco Price</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900 bg-emerald-50">Test Price</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Units</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Sales</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Profit</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Profitability</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Profit/Unit</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Discount</th>
                         <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Discount %</th>
-                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Units</th>
-                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">DR</th>
+                        <th className="text-right py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900">Discount/Unit</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white">
@@ -1107,28 +1109,28 @@ const PriceGenix = () => {
                           onClick={() => handleRowClick(row)}
                           className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer group"
                         >
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 font-medium text-gray-900">{row.article}</td>
+                          <td className="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-2 sm:py-2.5 px-2 sm:px-3 font-medium text-gray-900 border-r-2 border-gray-200">{row.article}</td>
                           <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-center">
-                            <span className={`inline-flex px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium ${
-                              row.status === 'Completed' 
-                                ? 'bg-green-100 text-green-700' 
-                                : 'bg-yellow-100 text-yellow-700'
-                            }`}>
+                            {row.status && <span className={`inline-flex px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium bg-green-100 text-green-700`}>
                               {row.status}
-                            </span>
+                            </span>}
                           </td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.stock}</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.mop}</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.nlc}</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.maxPrice}</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.minPrice}</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right font-bold text-emerald-700 bg-emerald-50">
-                            ₹{row.recoPrice}
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.stock.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.mop.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.nlc.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.maxPrice > 0 ? `₹${row.maxPrice.toLocaleString()}` : '-'}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.minPrice > 0 ? `₹${row.minPrice.toLocaleString()}` : '-'}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right font-bold text-gray-900 bg-emerald-50">
+                            ₹{row.testPrice.toLocaleString()}
                           </td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.discount}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.units.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.sales.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.profit.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.profitability}%</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.profitUnit.toLocaleString()}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.discount.toLocaleString()}</td>
                           <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.discountPercent}%</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.units}</td>
-                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">{row.dr}</td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-right text-gray-600">₹{row.discountUnit.toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>

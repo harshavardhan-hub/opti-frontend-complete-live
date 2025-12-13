@@ -28,7 +28,7 @@ const generateTop50MockData = (metric) => {
     { id: '#A1242', name: 'USB-C Hub Elite', sales: 1950000, profit: 585000, units: 39000, discount: 7800, avgPrice: 50000, maxPrice: 58000, minPrice: 45000 },
     { id: '#A1243', name: 'External SSD 1TB', sales: 1820000, profit: 546000, units: 9100, discount: 7280, avgPrice: 200000, maxPrice: 235000, minPrice: 178000 },
   ];
-  
+
   return baseData.sort((a, b) => b[metric] - a[metric]);
 };
 
@@ -47,7 +47,7 @@ const generateTop80MockData = (metric) => {
     { id: '#B5011', name: 'Ring Light Professional', sales: 3420000, profit: 1026000, units: 42750, discount: 13680, avgPrice: 80000, maxPrice: 98000, minPrice: 72000 },
     { id: '#B5012', name: 'HDMI Cable Premium 2m', sales: 3180000, profit: 954000, units: 106000, discount: 12720, avgPrice: 30000, maxPrice: 38000, minPrice: 26000 },
   ];
-  
+
   return baseData.sort((a, b) => b[metric] - a[metric]);
 };
 
@@ -147,6 +147,8 @@ const mockPromotionData = {
 const mockPastIterations = [
   {
     id: 1,
+    weekNumber: 49,
+    iterationNumber: 1,
     name: 'Q4 2025 Optimization',
     date: '2025-12-01 14:30',
     objective: 'Sales Maximization',
@@ -155,6 +157,8 @@ const mockPastIterations = [
   },
   {
     id: 2,
+    weekNumber: 48,
+    iterationNumber: 2,
     name: 'Holiday Season Test',
     date: '2025-11-28 10:15',
     objective: 'Profit Maximization',
@@ -180,7 +184,7 @@ const PriceGenix = () => {
   const [viewMode, setViewMode] = useState('current');
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
-  
+
   const [currentPerformanceData, setCurrentPerformanceData] = useState(mockPerformanceData);
   const [currentPromotionData, setCurrentPromotionData] = useState(mockPromotionData);
   const [currentTopArticlesSummary, setCurrentTopArticlesSummary] = useState(mockTopArticlesSummary);
@@ -225,7 +229,7 @@ const PriceGenix = () => {
     const headers = ['Article', 'Status', 'Stock', 'MOP', 'NLC', 'Max Price', 'Min Price', 'Test Price', 'Units', 'Sales', 'Profit', 'Profitability', 'Profit/Unit', 'Discount', 'Discount %', 'Discount/Unit'];
     const csvContent = [
       headers.join(','),
-      ...resultsData.map(row => 
+      ...resultsData.map(row =>
         `${row.article},${row.status},${row.stock},${row.mop},${row.nlc},${row.maxPrice},${row.minPrice},${row.testPrice},${row.units},${row.sales},${row.profit},${row.profitability},${row.profitUnit},${row.discount},${row.discountPercent},${row.discountUnit}`
       )
     ].join('\n');
@@ -288,6 +292,36 @@ const PriceGenix = () => {
     return labels[metric] || 'Sales';
   };
 
+  const parseConstraintsToMap = (constraintsString) => {
+    const map = {
+      sales: '',
+      profit: '',
+      profitPercentage: '',
+      units: '',
+      discount: ''
+    };
+
+    if (!constraintsString) return map;
+
+    const parts = constraintsString.split(',').map((p) => p.trim()).filter(Boolean);
+
+    parts.forEach((part) => {
+      const [rawKey, ...rest] = part.split(':');
+      if (!rawKey || rest.length === 0) return;
+
+      const key = rawKey.trim().toLowerCase();
+      const value = rest.join(':').trim();
+
+      if (key === 'sales') map.sales = value;
+      if (key === 'profit') map.profit = value;
+      if (key === 'profit %' || key === 'profit%' || key === 'profit percentage' || key === 'profitability') map.profitPercentage = value;
+      if (key === 'units') map.units = value;
+      if (key === 'discount') map.discount = value;
+    });
+
+    return map;
+  };
+
   const renderPopup = () => {
     if (!showPopup) return null;
 
@@ -345,7 +379,7 @@ const PriceGenix = () => {
                           <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-600">{Math.round(data.sales)}</td>
                           <td className="py-2 sm:py-3 px-3 sm:px-4 text-right">
                             {idx > 0 && (
-                              data.sales > generateTimeSeriesData(selectedArticle)[idx-1].sales ? (
+                              data.sales > generateTimeSeriesData(selectedArticle)[idx - 1].sales ? (
                                 <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 inline" />
                               ) : (
                                 <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 inline" />
@@ -359,7 +393,6 @@ const PriceGenix = () => {
                 </div>
               </div>
             </div>
-
             <div className="p-4 sm:p-6 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
               <button onClick={() => setShowPopup(false)} className="px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
                 Close
@@ -384,7 +417,6 @@ const PriceGenix = () => {
                 </button>
               </div>
             </div>
-
             <div className="p-4 sm:p-6 bg-white flex-1 overflow-auto">
               <div className="border border-gray-200 rounded-lg overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm min-w-[600px]">
@@ -411,7 +443,7 @@ const PriceGenix = () => {
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.avgSalePrice.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.base.discountUnit.toLocaleString()}</td>
                     </tr>
-                    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <tr className="border-b-2 border-gray-300 hover:bg-gray-50 transition-colors">
                       <td className="py-2 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.sales.toLocaleString()}</td>
                       <td className="py-2 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{currentPerformanceData.test.profit.toLocaleString()}</td>
@@ -459,7 +491,6 @@ const PriceGenix = () => {
     if (popupType === 'topArticles') {
       const currentTop50Data = generateTop50MockData(topArticlesMetric);
       const currentTop80Data = generateTop80MockData(topArticlesMetric);
-
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
           <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -475,7 +506,7 @@ const PriceGenix = () => {
                     <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                   </button>
                 </div>
-                
+
                 {/* 🔥 RADIO BUTTONS - GRAY COLOR SCHEME */}
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:flex-nowrap">
                   <label className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all text-[10px] sm:text-xs font-medium ${
@@ -638,10 +669,13 @@ const PriceGenix = () => {
                         <tr>
                           <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Article ID</th>
                           <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Product Name</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">{getMetricLabel(topArticlesMetric)}</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg Price</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Max Price</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Min Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Sales</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Profit</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Units</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Profitability</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg. Sale Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount / Unit</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
@@ -649,10 +683,13 @@ const PriceGenix = () => {
                           <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">{article.id}</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-gray-900">{article.name}</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{getFormattedValue(article.sales, 'sales')}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{getFormattedValue(article.profit, 'profit')}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{article.units.toLocaleString()}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{getFormattedValue(article.discount, 'discount')}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{((article.profit / article.sales) * 100).toFixed(2)}%</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.minPrice / 1000).toFixed(0)}K</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{Math.round(article.discount / article.units).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -669,10 +706,13 @@ const PriceGenix = () => {
                         <tr>
                           <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Article ID</th>
                           <th className="text-left py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Product Name</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">{getMetricLabel(topArticlesMetric)}</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg Price</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Max Price</th>
-                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Min Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Sales</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Profit</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Units</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Profitability</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Avg. Sale Price</th>
+                          <th className="text-right py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900 border-b-2 border-gray-300">Discount / Unit</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
@@ -680,10 +720,13 @@ const PriceGenix = () => {
                           <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-semibold text-gray-900">{article.id}</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-gray-900">{article.name}</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-gray-900">{getFormattedValue(article[topArticlesMetric], topArticlesMetric)}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{getFormattedValue(article.sales, 'sales')}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{getFormattedValue(article.profit, 'profit')}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{article.units.toLocaleString()}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{getFormattedValue(article.discount, 'discount')}</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">{((article.profit / article.sales) * 100).toFixed(2)}%</td>
                             <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.avgPrice / 1000).toFixed(0)}K</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.maxPrice / 1000).toFixed(0)}K</td>
-                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{(article.minPrice / 1000).toFixed(0)}K</td>
+                            <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-right text-gray-700">₹{Math.round(article.discount / article.units).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -708,7 +751,7 @@ const PriceGenix = () => {
     if (popupType === 'contribution') {
       return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowPopup(false)}>
-          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl shadow-2xl max-w-[60rem] w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0 rounded-t-xl">
               <div className="flex items-center justify-between">
                 <div>
@@ -725,68 +768,71 @@ const PriceGenix = () => {
               <div className="space-y-4 sm:space-y-5">
                 {/* Promotion ROI Table */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Promotion ROI</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2">Promotion ROI</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm min-w-[400px]">
+                    <table className="w-full table-fixed text-xs sm:text-sm min-w-[650px]">
                       <thead className="bg-gray-50">
                         <tr className="border-b border-gray-300">
-                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900"></th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Sales / Rs. Discount</th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Profits / Rs. Discount</th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Observations</th>
+                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 w-[140px]"></th>
+                          <th className="text-center py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 w-[130px]">Sales / Rs. Discount</th>
+                          <th className="text-center py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 w-[130px]">Profits / Rs. Discount</th>
+                          <th className="text-center py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Observations</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Control</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 11.92</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 0.93</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 whitespace-nowrap">Control</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-center text-gray-900">₹ 11.92</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-center text-gray-900">₹ 0.93</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-left text-gray-900"></td>
                         </tr>
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Test</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 11.18</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 0.87</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 whitespace-nowrap">Test</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-center text-gray-900">₹ 11.18</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-center text-gray-900">₹ 0.87</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-left text-gray-900"></td>
                         </tr>
                         <tr className="hover:bg-gray-50 transition-colors">
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 5.58</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 0.44</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 whitespace-nowrap">Increamental</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-center text-gray-900">₹ 5.58</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-center text-gray-900">₹ 0.44</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-left text-gray-900"></td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
+                {/* ✅ only ONE line between the two sections */}
+                <div className="border-b border-gray-300 my-4"></div>
+
                 {/* Promotion Effectiveness Table */}
                 <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2 pb-2 border-b-2 border-gray-900">Promotion Effectiveness</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-2">Promotion Effectiveness</h4>
                   <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm min-w-[400px]">
+                    <table className="w-full table-fixed text-xs sm:text-sm min-w-[650px]">
                       <thead className="bg-gray-50">
                         <tr className="border-b border-gray-300">
-                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900"></th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Values</th>
-                          <th className="text-right py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Observations</th>
+                          <th className="text-left py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900 w-[230px]"></th>
+                          <th className="text-center py-2 sm:py-2.5 px-2 sm:px-3 font-semibold text-gray-900 w-[110px]">Values</th>
+                          <th className="text-center py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Observations</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white">
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                           <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental Sales / Unit</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 77,528</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-center text-gray-900 whitespace-nowrap">₹ 77,528</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-left text-gray-900"></td>
                         </tr>
                         <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                           <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental Profit / Unit</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 6,071</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-center text-gray-900 whitespace-nowrap">₹ 6,071</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-left text-gray-900"></td>
                         </tr>
                         <tr className="hover:bg-gray-50 transition-colors">
                           <td className="py-2 sm:py-2.5 px-3 sm:px-4 font-semibold text-gray-900">Increamental Discount / Unit</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900">₹ 13,887</td>
-                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-right text-gray-900"></td>
+                          <td className="py-2 sm:py-2.5 px-2 sm:px-3 text-center text-gray-900 whitespace-nowrap">₹ 13,887</td>
+                          <td className="py-2 sm:py-2.5 px-3 sm:px-4 text-left text-gray-900"></td>
                         </tr>
                       </tbody>
                     </table>
@@ -846,8 +892,8 @@ const PriceGenix = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {viewMode !== 'history' && (
-        <PriceGenixSidebar 
-          isOpen={sidebarOpen} 
+        <PriceGenixSidebar
+          isOpen={sidebarOpen}
           toggleSidebar={toggleSidebar}
           uploadedFile={uploadedFile}
           onFileUpload={setUploadedFile}
@@ -859,50 +905,152 @@ const PriceGenix = () => {
           onReset={handleReset}
         />
       )}
-      
-      <Navbar 
-        toggleSidebar={toggleSidebar} 
-        showMenuButton={viewMode !== 'history'} 
+
+      <Navbar
+        toggleSidebar={toggleSidebar}
+        showMenuButton={viewMode !== 'history'}
         currentProduct="pricegenix"
         onLogoClick={() => navigate('/dashboard')}
       />
-      
+
       <div className={`pt-16 transition-all duration-300 ${viewMode === 'history' ? 'ml-0' : 'lg:ml-[320px]'}`}>
         <div className="p-4 sm:p-6 space-y-4">
           {viewMode === 'history' && selectedHistoryItem && (
-            <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border-2 border-gray-300">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2} />
+            <div className="relative bg-white rounded-lg p-3 sm:p-4 shadow-sm border-2 border-gray-300">
+              {/* Back button pinned to top-right (bigger on laptop) */}
+              <button
+                onClick={handleBackToCurrent}
+                className="absolute top-3 right-3 flex items-center justify-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-900 text-white rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800 transition-colors shadow-sm"
+              >
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.5} />
+                Back
+              </button>
+
+              {/* Two-column layout: left info, right constraints */}
+              <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 pr-16">
+                {/* Left: title/date/iteration/objective */}
+                <div className="flex items-start gap-3 lg:w-[320px] min-w-0">
+                  <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Eye className="w-5 h-5 text-white" strokeWidth={2} />
                   </div>
-                  <div className="flex-1 min-w-0">
+
+                  <div className="min-w-0">
                     <h3 className="text-xs sm:text-sm font-bold text-gray-900 truncate">{selectedHistoryItem.name}</h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1">
-                        <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                        {selectedHistoryItem.date}
-                      </p>
-                    </div>
-                    <div className="mt-1.5 space-y-0.5">
-                      <p className="text-[10px] sm:text-xs text-gray-500">
-                        <span className="font-semibold text-gray-700">Objective:</span> {selectedHistoryItem.objective}
-                      </p>
-                      <div className="text-[10px] sm:text-xs text-gray-500">
-                        <span className="font-semibold text-gray-700">Constraints:</span>
-                        <span className="ml-1">{selectedHistoryItem.constraints}</span>
-                      </div>
-                    </div>
+
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {selectedHistoryItem.date}
+                    </p>
+
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+                      <span className="font-semibold text-gray-700">Iteration:</span>
+                      <span className="ml-1 font-semibold text-gray-900">{selectedHistoryItem.iterationNumber}</span>
+                    </p>
+
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+                      <span className="font-semibold text-gray-700">Objective:</span>
+                      <span className="ml-1 font-bold text-gray-900">{selectedHistoryItem.objective}</span>
+                    </p>
                   </div>
                 </div>
 
-                <button
-                  onClick={handleBackToCurrent}
-                  className="flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-gray-900 text-white rounded-lg text-[10px] sm:text-xs font-semibold hover:bg-gray-800 transition-colors shadow-sm flex-shrink-0 w-full sm:w-auto"
-                >
-                  <ChevronLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={2.5} />
-                  Back
-                </button>
+                {/* Right: constraints (mobile single table, desktop split tables) */}
+                <div className="flex-1">
+                  <div className="text-[10px] sm:text-xs text-gray-500">
+                    <span className="font-semibold text-gray-700">Constraints:</span>
+                    {(() => {
+                      const constraintMap = parseConstraintsToMap(selectedHistoryItem.constraints);
+                      const val = (v) => (v && String(v).trim().length > 0 ? v : '-');
+
+                      return (
+                        <div className="mt-2">
+                          {/* Mobile: single table */}
+                          <div className="sm:hidden border border-gray-200 rounded-lg overflow-hidden">
+                            <table className="w-full table-fixed text-[10px]">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th className="w-[120px] text-left py-1 px-2 font-semibold text-gray-900 border-b border-gray-200">Metric</th>
+                                  <th className="text-right py-1 px-2 font-semibold text-gray-900 border-b border-gray-200">Value</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white">
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-1 px-2 font-medium text-gray-700">Sales</td>
+                                  <td className="py-1 px-2 text-right text-gray-900">{val(constraintMap.sales)}</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-1 px-2 font-medium text-gray-700">Profit</td>
+                                  <td className="py-1 px-2 text-right font-semibold text-gray-900">{val(constraintMap.profit)}</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-1 px-2 font-medium text-gray-700">Profit %</td>
+                                  <td className="py-1 px-2 text-right text-gray-900">{val(constraintMap.profitPercentage)}</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-1 px-2 font-medium text-gray-700">Units</td>
+                                  <td className="py-1 px-2 text-right text-gray-900">{val(constraintMap.units)}</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-1 px-2 font-medium text-gray-700">Discount</td>
+                                  <td className="py-1 px-2 text-right font-semibold text-gray-900">{val(constraintMap.discount)}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* Tablet/Desktop: two smaller tables */}
+                          <div className="hidden sm:grid grid-cols-2 gap-2 max-w-[560px]">
+                            <div className="border border-gray-200 rounded-lg overflow-hidden">
+                              <table className="w-full table-fixed text-[10px] sm:text-xs">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th className="w-[120px] text-left py-1 px-2 font-semibold text-gray-900 border-b border-gray-200">Metric</th>
+                                    <th className="text-right py-1 px-2 font-semibold text-gray-900 border-b border-gray-200">Value</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white">
+                                  <tr className="border-b border-gray-100">
+                                    <td className="py-1 px-2 font-medium text-gray-700">Sales</td>
+                                    <td className="py-1 px-2 text-right text-gray-900">{val(constraintMap.sales)}</td>
+                                  </tr>
+                                  <tr className="border-b border-gray-100">
+                                    <td className="py-1 px-2 font-medium text-gray-700">Profit</td>
+                                    <td className="py-1 px-2 text-right font-semibold text-gray-900">{val(constraintMap.profit)}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-1 px-2 font-medium text-gray-700">Profit %</td>
+                                    <td className="py-1 px-2 text-right text-gray-900">{val(constraintMap.profitPercentage)}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+
+                            <div className="border border-gray-200 rounded-lg overflow-hidden">
+                              <table className="w-full table-fixed text-[10px] sm:text-xs">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th className="w-[120px] text-left py-1 px-2 font-semibold text-gray-900 border-b border-gray-200">Metric</th>
+                                    <th className="text-right py-1 px-2 font-semibold text-gray-900 border-b border-gray-200">Value</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white">
+                                  <tr className="border-b border-gray-100">
+                                    <td className="py-1 px-2 font-medium text-gray-700">Units</td>
+                                    <td className="py-1 px-2 text-right text-gray-900">{val(constraintMap.units)}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-1 px-2 font-medium text-gray-700">Discount</td>
+                                    <td className="py-1 px-2 text-right font-semibold text-gray-900">{val(constraintMap.discount)}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -930,11 +1078,10 @@ const PriceGenix = () => {
                 </div>
 
                 <div className="hidden lg:block w-px h-16 bg-gray-300 self-stretch"></div>
-
                 <div className="flex flex-col gap-2 lg:w-auto lg:min-w-[280px]">
                   <label className="text-xs sm:text-sm font-semibold text-gray-900">Past Iterations</label>
                   <div className="relative">
-                    <button 
+                    <button
                       onClick={() => setIsHistoryDropdownOpen(!isHistoryDropdownOpen)}
                       className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-900 text-white rounded-lg text-[10px] sm:text-xs font-medium hover:bg-gray-800 transition-colors"
                     >
@@ -942,14 +1089,14 @@ const PriceGenix = () => {
                       <span>View History ({mockPastIterations.length})</span>
                       <ChevronRight className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 transform transition-transform ${isHistoryDropdownOpen ? 'rotate-90' : ''}`} />
                     </button>
-                    
+
                     {isHistoryDropdownOpen && (
                       <>
-                        <div 
-                          className="fixed inset-0 z-40" 
+                        <div
+                          className="fixed inset-0 z-40"
                           onClick={() => setIsHistoryDropdownOpen(false)}
                         />
-                        
+
                         <div className="absolute right-0 mt-2 w-full sm:w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                           <div className="p-2 max-h-80 overflow-y-auto">
                             <div className="px-3 py-2 border-b border-gray-200">
@@ -967,9 +1114,12 @@ const PriceGenix = () => {
                                   <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
                                 </div>
                                 <p className="text-[10px] text-gray-500">{iteration.date}</p>
+                                <p className="text-[10px] text-gray-600 font-medium mt-0.5">
+                                  Iteration {iteration.iterationNumber}
+                                </p>
                                 <div className="flex items-center gap-2 mt-1.5">
                                   <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-gray-900">
-                                    {iteration.objective}
+                                    Objective: {iteration.objective}
                                   </span>
                                   <span className="text-[10px] text-gray-500">•</span>
                                   <span className="text-[10px] text-gray-600 font-medium">
@@ -991,7 +1141,7 @@ const PriceGenix = () => {
           {hasResults ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div 
+                <div
                   onClick={() => handleCardClick('comparison')}
                   className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
@@ -1011,7 +1161,7 @@ const PriceGenix = () => {
                   </div>
                 </div>
 
-                <div 
+                <div
                   onClick={() => handleCardClick('topArticles')}
                   className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
@@ -1031,7 +1181,7 @@ const PriceGenix = () => {
                   </div>
                 </div>
 
-                <div 
+                <div
                   onClick={() => handleCardClick('contribution')}
                   className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
@@ -1051,7 +1201,7 @@ const PriceGenix = () => {
                   </div>
                 </div>
 
-                <div 
+                <div
                   onClick={() => handleCardClick('charts')}
                   className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 hover:shadow-md hover:border-gray-400 transition-all cursor-pointer group"
                 >
@@ -1104,8 +1254,8 @@ const PriceGenix = () => {
                     </thead>
                     <tbody className="bg-white">
                       {resultsData.map((row, index) => (
-                        <tr 
-                          key={index} 
+                        <tr
+                          key={index}
                           onClick={() => handleRowClick(row)}
                           className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer group"
                         >
